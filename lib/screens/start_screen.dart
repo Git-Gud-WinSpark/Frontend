@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/screens/auth.dart';
 
@@ -38,16 +39,19 @@ class _StartscreenState extends ConsumerState<Startscreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Center(
         child: Image.asset(
           "assets/images/image.jpg",
-          fit: BoxFit.fitHeight,
+          fit: BoxFit.cover,
           height: double.infinity,
         ),
       ),
       bottomNavigationBar: Container(
         height: 60,
-        color: Colors.black12,
+        decoration: BoxDecoration(
+          color: Color.fromARGB(255, 25, 27, 44),
+        ),
         child: InkWell(
           onTap: () => _openLoginOverlay(),
           child: const Padding(
@@ -56,8 +60,9 @@ class _StartscreenState extends ConsumerState<Startscreen> {
               children: [
                 Icon(
                   Icons.login,
+                  color: Colors.white,
                 ),
-                Text('login'),
+                Text('login', style: TextStyle(color: Colors.white)),
               ],
             ),
           ),

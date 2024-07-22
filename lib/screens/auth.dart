@@ -26,7 +26,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   var _enteredEmail = "";
   var _enteredPassword = "";
   var _enteredUsername = "";
-  File? _selectedImage;
+  File _selectedImage = File("assets/images/sample.jpeg");
   var _isAuthenticating = false;
 
   void _submit() async {
@@ -42,6 +42,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           final userCredential = await _firebase.signInWithEmailAndPassword(
               email: _enteredEmail, password: _enteredPassword);
           print("Done");
+          Navigator.of(context).pop();
 
           ref.watch(loginProvider.notifier).login();
         } on FirebaseAuthException catch (e) {
@@ -70,7 +71,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             'image_url': imageUrl,
             'email': _enteredEmail,
           });
+          print("Here");
+          Navigator.of(context).pop();
           ref.watch(loginProvider.notifier).login();
+          setState(() {
+            _isAuthenticating = false;
+          });
         } on FirebaseAuthException catch (error) {
           if (error.code == 'email-already-in-use') {
             // ...
@@ -229,12 +235,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                               !_isLogin ? 'Sign up' : 'Login',
                             ),
                           ),
-                        InkWell(
-                          onTap: () async {
-                            await signInWithGoogle();
-                          },
-                          child: Image.asset("assets/images/google.png"),
-                        ),
+                        // InkWell(
+                        //   onTap: () async {
+                        //     await signInWithGoogle();
+                        //   },
+                        //   child: Image.asset("assets/images/google.png"),
+                        // ),
                         if (!_isAuthenticating)
                           TextButton(
                             onPressed: () {
