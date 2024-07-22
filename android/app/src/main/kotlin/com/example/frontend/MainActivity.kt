@@ -1,4 +1,4 @@
-package com.example.git_gud
+package com.example.frontend
 
 import io.flutter.embedding.android.FlutterActivity
 
