@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "432474904178",
+    "project_id": "git-gud-f001b",
+    "storage_bucket": "git-gud-f001b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:432474904178:android:75e74e363b6f380059d4eb",
+        "android_client_info": {
+          "package_name": "com.example.frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABZWErSOniIudiqhFobu5Zelj-32jBvXM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
