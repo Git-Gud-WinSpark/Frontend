@@ -2,15 +2,12 @@ import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/provider/login_provider.dart';
+import 'package:frontend/provider/token_provider.dart';
+import 'package:frontend/services/login.dart';
+import 'package:frontend/services/signup.dart';
 import 'package:frontend/widgets/user_image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-
-final _firebase = FirebaseAuth.instance;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key});
@@ -31,6 +28,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
   void _submit() async {
     final isValid = _form.currentState!.validate();
+    print("yo");
 
     if (isValid) {
       _form.currentState!.save();
@@ -39,51 +37,43 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       });
       if (_isLogin) {
         try {
-          final userCredential = await _firebase.signInWithEmailAndPassword(
-              email: _enteredEmail, password: _enteredPassword);
+          final userCredential =
+              await loginUser(email: _enteredEmail, password: _enteredPassword);
+          print(userCredential);
+          ref.watch(tokenProvider.notifier).update(userCredential['token']);
           print("Done");
           Navigator.of(context).pop();
 
           ref.watch(loginProvider.notifier).login();
-        } on FirebaseAuthException catch (e) {
+        } catch (e) {
           ScaffoldMessenger.of(context).clearSnackBars();
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(e.message ?? 'Authentication failed')),
+            SnackBar(content: Text('$e Authentication failed')),
           );
+
+          setState(() {
+            _isAuthenticating = false;
+          });
         }
       } else {
         try {
-          final userCredential = await _firebase.createUserWithEmailAndPassword(
-              email: _enteredEmail, password: _enteredPassword);
-
-          final storageRef = FirebaseStorage.instance
-              .ref()
-              .child('user_image')
-              .child('${userCredential.user!.uid}.jpg');
-          await storageRef.putFile(_selectedImage!);
-          final imageUrl = await storageRef.getDownloadURL();
-
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(userCredential.user!.uid)
-              .set({
-            'username': _enteredUsername,
-            'image_url': imageUrl,
-            'email': _enteredEmail,
-          });
+          print("Start");
+          final userCredential = await registerUser(
+            name: _enteredUsername,
+            email: _enteredEmail,
+            password: _enteredPassword,
+          );
+          // ref.watch(tokenProvider.notifier).update(userCredential['token']);
           print("Here");
           Navigator.of(context).pop();
           ref.watch(loginProvider.notifier).login();
           setState(() {
             _isAuthenticating = false;
           });
-        } on FirebaseAuthException catch (error) {
-          if (error.code == 'email-already-in-use') {
-            // ...
-          }
+        } catch (error) {
           ScaffoldMessenger.of(context).clearSnackBars();
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(error.message ?? 'Authentication failed')),
+            SnackBar(content: Text(' $error Authentication failed')),
           );
 
           setState(() {
@@ -91,40 +81,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           });
         }
       }
-    }
-
-    if (!_isLogin && _selectedImage == null) {
-      //show error message ...
-      return;
-    }
-  }
-
-  Future<dynamic> signInWithGoogle() async {
-    print("object");
-    try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-      final GoogleSignInAuthentication? googleAuth =
-          await googleUser?.authentication;
-
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
-      );
-
-      return await FirebaseAuth.instance.signInWithCredential(credential);
-    } on Exception catch (e) {
-      // TODO
-      print('exception->$e');
-    }
-  }
-
-  Future<bool> signOutFromGoogle() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      return true;
-    } on Exception catch (_) {
-      return false;
     }
   }
 

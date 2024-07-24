@@ -1,0 +1,17 @@
+List<String> skills = [
+  "Flutter",
+  "Firebase",
+  "Google Cloud",
+  "AWS",
+  "Dart",
+  "Python",
+  "Java",
+  "C++",
+  "C",
+  "JavaScript",
+  "HTML",
+  "CSS",
+  "SQL",
+  "NoSQL",
+  "MongoDB",
+];
