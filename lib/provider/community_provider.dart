@@ -1,16 +1,19 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/models/community.dart';
 
-class CommunityNotifier extends StateNotifier<Map<dynamic, dynamic>> {
+class CommunityNotifier extends StateNotifier<Community> {
   CommunityNotifier()
-      : super({
-          "name": "Global Community",
-        });
-  void selectedCommunity(Map<dynamic, dynamic> community) {
+      : super(Community(
+          name: "",
+          id: "",
+          channels: [],
+      ));
+  void selectedCommunity(Community community) {
     state = community;
   }
 }
 
 final communityProvider =
-    StateNotifierProvider<CommunityNotifier, Map<dynamic, dynamic>>((ref) {
+    StateNotifierProvider<CommunityNotifier, Community>((ref) {
   return CommunityNotifier();
 });

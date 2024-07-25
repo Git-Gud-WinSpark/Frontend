@@ -1,7 +1,7 @@
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
 class LoginProvider extends StateNotifier<bool> {
-  LoginProvider() : super(true);
+  LoginProvider() : super(false);
 
   void login() {
     state = true;
