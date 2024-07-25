@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/provider/login_provider.dart';
+import 'package:frontend/provider/preference_provider.dart';
 import 'package:frontend/provider/token_provider.dart';
 import 'package:frontend/services/login.dart';
 import 'package:frontend/services/signup.dart';
@@ -39,12 +40,14 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         try {
           final userCredential =
               await loginUser(email: _enteredEmail, password: _enteredPassword);
-          print(userCredential);
+          print(userCredential['preferences']);
           ref.watch(tokenProvider.notifier).update(userCredential['token']);
+          ref.watch(preferenceProvider.notifier).update(userCredential['preferences']);
           print("Done");
           Navigator.of(context).pop();
 
           ref.watch(loginProvider.notifier).login();
+          
         } catch (e) {
           ScaffoldMessenger.of(context).clearSnackBars();
           ScaffoldMessenger.of(context).showSnackBar(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/provider/preference_provider.dart';
 import 'package:frontend/provider/token_provider.dart';
+import 'package:frontend/screens/preferences.dart';
 import 'package:frontend/services/sendPreferences.dart';
 import 'package:frontend/widgets/skills.dart';
 import 'package:frontend/dummydata/skills.dart';
@@ -14,27 +16,9 @@ class Success extends ConsumerStatefulWidget {
 }
 
 class _SuccessState extends ConsumerState<Success> {
-  List<String> prefernces = [];
-
-  void _togglePreference(String preference, bool value) {
-    setState(() {
-      if (!value) {
-        if (prefernces.contains(preference)) {
-          prefernces.remove(preference);
-        }
-      } else {
-        if (!prefernces.contains(preference)) {
-          prefernces.add(preference);
-        }
-      }
-    });
-    // print("object");
-    // print(prefernces);
-  }
-
   @override
   Widget build(BuildContext context) {
-    print(prefernces);
+  var preferences = ref.read(preferenceProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(children: [
@@ -46,53 +30,7 @@ class _SuccessState extends ConsumerState<Success> {
           ),
         ),
         Center(
-          child: Container(
-            width: 400,
-            height: 600,
-            color:
-                Theme.of(context).colorScheme.inverseSurface.withOpacity(0.6),
-            child: Column(
-              children: [
-                Text(
-                  "Tell us about your preferences...",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 30,
-                  ),
-                ),
-                Expanded(
-                  child: GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio:
-                          3, // Adjust as necessary for button size
-                      crossAxisSpacing: 10.0,
-                      mainAxisSpacing: 10.0,
-                    ),
-                    itemCount: skills.length,
-                    itemBuilder: (context, index) {
-                      return ToggleSkills(
-                        text: skills[index],
-                        onToggle: _togglePreference,
-                      );
-                    },
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    print(ref.read(tokenProvider));
-                    dynamic res = await sendPreferences(
-                        userID: ref.read(tokenProvider),
-                        preferences: prefernces);
-
-                    print("Done");
-                    print(res);
-                  },
-                  child: Text("Submit"),
-                )
-              ],
-            ),
-          ),
+          child: preferences.isEmpty ? Preferences(): Container(),
         ),
       ]),
     );
