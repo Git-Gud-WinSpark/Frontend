@@ -87,6 +87,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             password: _enteredPassword,
           );
           ref.watch(tokenProvider.notifier).update(userCredential['token']);
+          ref.watch(preferenceProvider.notifier).update([]);
           print("Here");
           Navigator.of(context).pop();
           ref.watch(loginProvider.notifier).login();
@@ -147,12 +148,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (!_isLogin)
-                          UserImagePicker(
-                            onPickImage: (pickedImage) {
-                              _selectedImage = pickedImage;
-                            },
-                          ),
+                        // if (!_isLogin)
+                        //   UserImagePicker(
+                        //     onPickImage: (pickedImage) {
+                        //       _selectedImage = pickedImage;
+                        //     },
+                        //   ),
                         TextFormField(
                           decoration: const InputDecoration(
                             labelText: 'Email Address',

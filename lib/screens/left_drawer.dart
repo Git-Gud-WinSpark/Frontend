@@ -260,7 +260,7 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                             .watch(
                                                 communityListProvider.notifier)
                                             .addCommunity(Community(
-                                              id: "1234", //change karna hai baad me
+                                              id: res["communityID"], //change karna hai baad me
                                               name: nameController.text,
                                               // imageUrl: "",
                                               channels: [],

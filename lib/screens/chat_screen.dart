@@ -4,6 +4,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/common.dart';
+import 'package:frontend/provider/token_provider.dart';
 import 'package:frontend/screens/left_drawer.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:image_picker/image_picker.dart';
@@ -15,17 +18,17 @@ import 'package:open_filex/open_filex.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 
-class ChatScreen extends StatefulWidget {
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+
+class ChatScreen extends ConsumerStatefulWidget {
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  ConsumerState<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenState extends ConsumerState<ChatScreen> {
   List<types.Message> _messages = [];
   String title = "Channel Name";
-  final _user = const types.User(
-    id: '82091008-a484-4a89-ae75-a22bf8d6f3ac',
-  );
+  var _user;
   void _drawerData(String data) {
     print(data);
     setState(() {
@@ -199,6 +202,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _handleSendPressed(types.PartialText message) {
+    socket!.emit('messagep2p', message.text);
     final textMessage = types.TextMessage(
       author: _user,
       createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -211,12 +215,48 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void initState() {
+    var userID = ref.read(tokenProvider);
+    _user = types.User(
+      id: userID,
+    );
+    initSocket();
     super.initState();
     _loadMessages();
   }
 
+  IO.Socket? socket;
+
+  initSocket() {
+    socket = IO.io(urlSocket, <String, dynamic>{
+      'autoConnect': false,
+      'transports': ['websocket'],
+    });
+    socket!.connect();
+    socket!.onConnect((_) {
+      print('Connection established');
+    });
+    socket!.onDisconnect((_) => print('Connection Disconnection'));
+    socket!.onConnectError((err) => print(err));
+    socket!.onError((err) => print(err));
+    socket!.emit('signin', _user.id); //yahan pe userid dalna hai
+    socket!.on('messagep2p', (data) {
+      print("insideSOcket");
+      print(data);
+      setState(() {
+        _addMessage(types.TextMessage(
+          author: _user,
+          createdAt: DateTime.now().millisecondsSinceEpoch,
+          id: const Uuid().v4(),
+          text: data,
+        ));
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    
+
     return Scaffold(
       drawer: Drawer(
         width: double.infinity,
@@ -242,7 +282,7 @@ class _ChatScreenState extends State<ChatScreen> {
         onAttachmentPressed: _handleAttachmentPressed,
         onMessageTap: _handleMessageTap,
         onPreviewDataFetched: _handlePreviewDataFetched,
-        onSendPressed: _handleSendPressed,
+        onSendPressed: (partText) => _handleSendPressed(partText),
         showUserAvatars: true,
         showUserNames: true,
         user: _user,

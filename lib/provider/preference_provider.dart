@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PreferenceNotifier extends StateNotifier<List<dynamic>> {
-  PreferenceNotifier() : super([""]);
+  PreferenceNotifier() : super([]);
 
   void update(List<dynamic> preferences) {
     state = [...preferences];

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/dummydata/skills.dart';
+import 'package:frontend/provider/preference_provider.dart';
 import 'package:frontend/provider/token_provider.dart';
 import 'package:frontend/services/sendPreferences.dart';
 import 'package:frontend/widgets/skills.dart';
@@ -68,7 +69,7 @@ class _PreferencesState extends ConsumerState<Preferences> {
                 userID: ref.read(tokenProvider),
                 preferences: prefernces,
               );
-
+              ref.watch(preferenceProvider.notifier).update(prefernces);
               print("Done");
               print(res);
             },

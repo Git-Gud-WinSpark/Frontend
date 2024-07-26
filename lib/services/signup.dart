@@ -1,13 +1,12 @@
 import "dart:convert";
 
+import "package:frontend/common.dart";
+
 import "postRequest.dart";
 import "dart:io";
 
 dynamic registerUser(
     {required String name, required String email, required String password}) {
-  String urlStart = Platform.isAndroid
-      ? 'http://192.168.9.205:3000'
-      : 'http://localhost:3000';
   Uri url = Uri.parse("$urlStart/signup");
   Map<String, dynamic> params = {
     "username": name,
