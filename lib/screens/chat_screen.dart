@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/common.dart';
+import 'package:frontend/provider/community_provider.dart';
 import 'package:frontend/provider/token_provider.dart';
 import 'package:frontend/screens/left_drawer.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -28,11 +29,15 @@ class ChatScreen extends ConsumerStatefulWidget {
 class _ChatScreenState extends ConsumerState<ChatScreen> {
   List<types.Message> _messages = [];
   String title = "Channel Name";
+  String id = "";
+  String? commId;
   var _user;
-  void _drawerData(String data) {
+  void _drawerData(dynamic data) {
     print(data);
     setState(() {
-      title = data;
+      title = data['name'];
+      id = data['id'];
+      _messages = [];
     });
   }
 
@@ -201,8 +206,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     });
   }
 
-  void _handleSendPressed(types.PartialText message) {
-    socket!.emit('messagep2p', message.text);
+  void _handleSendPressed(
+      types.PartialText message, String? comm_id, String channel_id) {
+    socket!.emit('messagep2p', {
+      'msg': message.text,
+      'id': _user.id,
+      'comm_id': comm_id,
+      'channel_id': channel_id
+    });
     final textMessage = types.TextMessage(
       author: _user,
       createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -219,6 +230,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     _user = types.User(
       id: userID,
     );
+    commId = ref.read(communityProvider).id;
     initSocket();
     super.initState();
     _loadMessages();
@@ -242,21 +254,21 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     socket!.on('messagep2p', (data) {
       print("insideSOcket");
       print(data);
+      print(data['message']);
       setState(() {
-        _addMessage(types.TextMessage(
-          author: _user,
-          createdAt: DateTime.now().millisecondsSinceEpoch,
-          id: const Uuid().v4(),
-          text: data,
-        ));
+        if (data['comm_id'] == commId && data['channel_id'] == id)
+          _addMessage(types.TextMessage(
+            author: types.User(id: data['id']),
+            createdAt: DateTime.now().millisecondsSinceEpoch,
+            id: const Uuid().v4(),
+            text: data['message'],
+          ));
       });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    
-
     return Scaffold(
       drawer: Drawer(
         width: double.infinity,
@@ -282,7 +294,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         onAttachmentPressed: _handleAttachmentPressed,
         onMessageTap: _handleMessageTap,
         onPreviewDataFetched: _handlePreviewDataFetched,
-        onSendPressed: (partText) => _handleSendPressed(partText),
+        onSendPressed: (partText) => _handleSendPressed(partText, commId, id),
         showUserAvatars: true,
         showUserNames: true,
         user: _user,

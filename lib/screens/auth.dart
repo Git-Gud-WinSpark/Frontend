@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/provider/all_communities_provider.dart';
 import 'package:frontend/provider/community_list_provider.dart';
 import 'package:frontend/provider/login_provider.dart';
 import 'package:frontend/provider/preference_provider.dart';
 import 'package:frontend/provider/token_provider.dart';
 import 'package:frontend/services/getCommunities.dart';
+import 'package:frontend/services/listCommunities.dart';
 import 'package:frontend/services/login.dart';
 import 'package:frontend/services/signup.dart';
 import 'package:frontend/widgets/user_image_picker.dart';
@@ -49,11 +51,18 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               .update(userCredential['preferences']);
 
           // This needs to be replaced.
+          final storeAllComm = await listCommunities();
+          // print(storeAllComm["ListofAllCommunities"]);
+          ref
+              .watch(allCommunityListProvider.notifier)
+              .storeCommunities(storeAllComm["ListofAllCommunities"]);
           final getComm = await getCommunities(token: userCredential['token']);
+          print(getComm);
           final communities = getComm['CommunitiesJoinedByUser'];
           ref
               .watch(communityListProvider.notifier)
               .storeCommunities(communities);
+
           print("Done");
           Navigator.of(context).pop();
 
