@@ -10,6 +10,7 @@ import 'package:frontend/provider/community_provider.dart';
 import 'package:frontend/provider/token_provider.dart';
 import 'package:frontend/screens/left_drawer.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:frontend/screens/right_drawer.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'package:mime/mime.dart';
@@ -274,7 +275,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         width: double.infinity,
         child: LeftDrawer(channelSelected: _drawerData),
       ),
-      endDrawer: Drawer(),
+      endDrawer: Drawer(
+        child: RightDrawer(),
+      ),
       drawerEnableOpenDragGesture: true,
       appBar: AppBar(
         title: Text(title),
