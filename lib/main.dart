@@ -7,7 +7,7 @@ import 'package:frontend/screens/start_screen.dart';
 import 'package:frontend/screens/success.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  // WidgetsFlutterBinding.ensureInitialized();
   runApp(const ProviderScope(child: MyApp()));
 }
 
