@@ -38,20 +38,35 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     setState(() {
       title = data['name'];
       id = data['id'];
-      _messages = [];
-    });
-  }
-
-  void _loadMessages() async {
-    final response = await rootBundle.loadString('assets/messages.json');
-    final messages = (jsonDecode(response) as List)
-        .map((e) => types.Message.fromJson(e as Map<String, dynamic>))
-        .toList();
-
-    setState(() {
+      var messages = (data["messages"] as List).map((e) {
+        print(DateTime.parse(data["messages"][0]['timestamp'])
+            .microsecondsSinceEpoch);
+        print(DateTime.parse(data["messages"][1]['timestamp'])
+            .microsecondsSinceEpoch);
+        return types.TextMessage(
+          id: e['_id'],
+          author: types.User(id: e['senderID']),
+          createdAt: DateTime.parse(e['timestamp']).millisecondsSinceEpoch,
+          text: e['message'],
+        );
+      }).toList();
+      messages.sort(
+        (a, b) => b.createdAt!.compareTo(a.createdAt!),
+      );
       _messages = messages;
     });
   }
+
+  // void _loadMessages() async {
+  //   final response = await rootBundle.loadString('assets/messages.json');
+  //   final messages = (jsonDecode(response) as List)
+  //       .map((e) => types.Message.fromJson(e as Map<String, dynamic>))
+  //       .toList();
+
+  //   setState(() {
+  //     _messages = messages;
+  //   });
+  // }
 
   void _addMessage(types.Message message) {
     setState(() {
@@ -209,7 +224,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   void _handleSendPressed(
       types.PartialText message, String? comm_id, String channel_id) {
-    socket!.emit('messagep2p', {
+    socket!.emit('messagep2c', {
       'msg': message.text,
       'id': _user.id,
       'comm_id': comm_id,
@@ -234,7 +249,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     commId = ref.read(communityProvider).id;
     initSocket();
     super.initState();
-    _loadMessages();
+    // _loadMessages();
   }
 
   IO.Socket? socket;
@@ -252,7 +267,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     socket!.onConnectError((err) => print(err));
     socket!.onError((err) => print(err));
     socket!.emit('signin', _user.id); //yahan pe userid dalna hai
-    socket!.on('messagep2p', (data) {
+    socket!.on('messagep2c', (data) {
       print("insideSOcket");
       print(data);
       print(data['message']);

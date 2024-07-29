@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/dummydata/skills.dart';
 import 'package:frontend/models/channel.dart';
 import 'package:frontend/models/community.dart';
 import 'package:frontend/provider/all_communities_provider.dart';
@@ -8,8 +9,10 @@ import 'package:frontend/provider/community_provider.dart';
 import 'package:frontend/provider/token_provider.dart';
 import 'package:frontend/services/createChannel.dart';
 import 'package:frontend/services/createCommunity.dart';
+import 'package:frontend/services/getChats.dart';
 import 'package:frontend/widgets/community_cards.dart';
 import 'package:frontend/widgets/community_icon.dart';
+import 'package:frontend/widgets/skills.dart';
 
 class LeftDrawer extends ConsumerStatefulWidget {
   const LeftDrawer({super.key, required this.channelSelected});
@@ -45,9 +48,6 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                       child: Container(
                         color: Color.fromARGB(255, 47, 47, 47),
                         child: Stack(children: [
-                          Container(
-                              // color: Color.fromARGB(255, 57, 57, 57).withOpacity(0),
-                              ),
                           CommunityIcon(
                             id: "1234",
                             name: 'Private Chats',
@@ -156,8 +156,11 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                                                 .addChannel(
                                                                   communityInfo,
                                                                   Channel(
-                                                                      name: channelNameController
-                                                                          .text),
+                                                                    name: channelNameController
+                                                                        .text,
+                                                                    id: res[
+                                                                        "channelID"],
+                                                                  ),
                                                                 );
                                                             // widget.channelSelected(channelNameController.text);
                                                           }
@@ -207,17 +210,26 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                             ? ListView.builder(
                                                 itemBuilder: (context, index) {
                                                   return InkWell(
-                                                    onTap: () {
+                                                    onTap: () async {
                                                       Navigator.of(context).pop(
                                                         communityInfo
                                                             .channels![index],
                                                       );
+                                                      var res = await getChats(
+                                                          channelId:
+                                                              communityInfo
+                                                                  .channels![
+                                                                      index]
+                                                                  .id!);
+                                                      print(res);
                                                       widget.channelSelected({
                                                         'name': communityInfo
                                                             .channels![index]
                                                             .name,
                                                         'id': communityInfo
-                                                            .channels![index].id
+                                                            .channels![index]
+                                                            .id,
+                                                        'messages': res["chat"]
                                                       });
                                                     },
                                                     child: Container(
@@ -263,14 +275,67 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
+                      List<String> tags = [];
                       TextEditingController nameController =
                           TextEditingController();
                       showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
                                 title: Text("Create Community"),
-                                content: TextField(
-                                  controller: nameController,
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    TextField(
+                                      controller: nameController,
+                                      decoration: InputDecoration(
+                                        hintText: "Community Name",
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
+                                    Row(children: [
+                                      Text("Select Tags: "),
+                                      Expanded(
+                                        child: Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.9,
+                                          height: 50,
+                                          child: ListView.builder(
+                                            scrollDirection: Axis.horizontal,
+                                            shrinkWrap: true,
+                                            itemBuilder: (context, index) {
+                                              void _togglePreference(
+                                                  String preference,
+                                                  bool value) {
+                                                setState(() {
+                                                  if (!value) {
+                                                    if (tags
+                                                        .contains(preference)) {
+                                                      tags.remove(preference);
+                                                    }
+                                                  } else {
+                                                    if (!tags
+                                                        .contains(preference)) {
+                                                      tags.add(preference);
+                                                    }
+                                                  }
+                                                });
+                                              }
+
+                                              return ToggleSkills(
+                                                text: skills[index],
+                                                onToggle: _togglePreference,
+                                              );
+                                            },
+                                            itemCount: skills.length,
+                                          ),
+                                        ),
+                                      )
+                                    ]),
+                                  ],
                                 ),
                                 actions: [
                                   TextButton(
@@ -286,9 +351,8 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                       var res = await createCommunity(
                                         token: userID,
                                         communityName: nameController.text,
+                                        tags: tags,
                                       );
-                                      print("hh");
-                                      print(res);
                                       if (res['status'] == 'Success') {
                                         Navigator.of(context).pop();
                                         ref
@@ -341,7 +405,7 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                       child: ListView.builder(
                                         itemBuilder: (context, index) {
                                           // return Text(
-                                              // communityList[index].name);
+                                          // communityList[index].name);
                                           return CommunityCard(
                                               id: communityList[index].id,
                                               name: communityList[index].name,

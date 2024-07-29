@@ -20,7 +20,7 @@ class CommunityCard extends ConsumerStatefulWidget {
 class _CommunityCardState extends ConsumerState<CommunityCard> {
   @override
   Widget build(BuildContext context) {
-    widget.tags = ["Flutter", "Dart", "Community", "Programming"];
+    // widget.tags = ["Flutter", "Dart", "Community", "Programming"];
     var communityList = ref.watch(communityListProvider);
     var userId = ref.watch(tokenProvider);
     return Card(
@@ -62,7 +62,9 @@ class _CommunityCardState extends ConsumerState<CommunityCard> {
                           Community(
                             id: widget.id,
                             name: widget.name,
-                            channels: (res['Channels'] as List).map((e) => Channel.fromJson(e)).toList(),
+                            channels: (res['Channels'] as List)
+                                .map((e) => Channel.fromJson(e))
+                                .toList(),
                           ),
                         ); //need to add channels once api returns it
                   }

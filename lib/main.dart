@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/provider/login_provider.dart';
 import 'package:frontend/provider/preference_provider.dart';
@@ -8,6 +9,9 @@ import 'package:frontend/screens/success.dart';
 
 void main() async {
   // WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
   runApp(const ProviderScope(child: MyApp()));
 }
 
