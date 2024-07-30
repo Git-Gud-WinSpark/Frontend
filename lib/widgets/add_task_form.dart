@@ -1,8 +1,17 @@
 import 'package:date_field/date_field.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/models/tasks.dart';
+import 'package:frontend/services/storeTasks.dart';
 
 class TaskForm extends StatefulWidget {
+  const TaskForm(
+      {super.key,
+      required String this.uId,
+      required String this.coId,
+      required String this.chId});
+  final String uId;
+  final String coId;
+  final String chId;
   @override
   _TaskFormState createState() => _TaskFormState();
 }
@@ -58,11 +67,16 @@ class _TaskFormState extends State<TaskForm> {
     });
   }
 
-  void _submitForm() {
-    Navigator.of(context).pop(
-      _tasks.map((task) => task.toJson()).toList(),
-    );
-    print('Form Submitted: ${_tasks.map((task) => task.toJson()).toList()}');
+  void _submitForm() async {
+    dynamic tasks = _tasks.map((task) => task.toJson()).toList();
+    Navigator.of(context).pop(tasks);
+    var res = await storeTasks(
+        token: widget.uId,
+        communityID: widget.coId,
+        channelID: widget.chId,
+        tasks: tasks);
+    print(res);
+    print('Form Submitted: ${tasks}');
   }
 
   @override
@@ -198,6 +212,12 @@ class _TaskFormState extends State<TaskForm> {
             ElevatedButton(
               onPressed: _submitForm,
               child: Text('Submit Form'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel Button'),
             ),
           ],
         ),

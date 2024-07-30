@@ -34,6 +34,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   String title = "Channel Name";
   String id = "";
   String? commId;
+  String? userID;
   var _user;
   bool _gotData = false;
   void _drawerData(dynamic data) {
@@ -43,10 +44,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       id = data['id'];
       _gotData = true;
       var messages = (data["messages"] as List).map((e) {
-        print(DateTime.parse(data["messages"][0]['timestamp'])
-            .microsecondsSinceEpoch);
-        print(DateTime.parse(data["messages"][1]['timestamp'])
-            .microsecondsSinceEpoch);
         return types.TextMessage(
           id: e['_id'],
           author: types.User(id: e['senderID']),
@@ -246,9 +243,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   @override
   void initState() {
-    var userID = ref.read(tokenProvider);
+    userID = ref.read(tokenProvider);
     _user = types.User(
-      id: userID,
+      id: userID!,
     );
     commId = ref.read(communityProvider).id;
     initSocket();
@@ -313,7 +310,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             ), //drawer
           )),
       endDrawer: Drawer(
-        child: RightDrawer(),
+        child: RightDrawer(chId: id, coId: commId!, uId: userID!),
       ),
       appBar: AppBar(
         title: Text(title),

@@ -2,18 +2,49 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/models/tasks.dart';
 import 'package:frontend/screens/task_screen.dart';
+import 'package:frontend/services/getLiveTask.dart';
 import 'package:frontend/widgets/add_task_form.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class RightDrawer extends ConsumerStatefulWidget {
-  const RightDrawer({super.key});
-
+  const RightDrawer(
+      {super.key,
+      required String this.uId,
+      required String this.coId,
+      required String this.chId});
+  final String uId;
+  final String coId;
+  final String chId;
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _RightDrawerState();
 }
 
 class _RightDrawerState extends ConsumerState<RightDrawer> {
   List<Map<String, dynamic>> task = [];
+
+  void fetchTasks() async {
+    var response = await getTasks(
+      token: widget.uId,
+      communityID: widget.coId,
+      channelID: widget.chId,
+    );
+    print(response);
+    setState(() {
+      print((response["LiveTasks"] as List));
+      if ((response["LiveTasks"] as List).isNotEmpty) {
+        task = List<Map<String, dynamic>>.from(
+            response["LiveTasks"][0]["liveTask"]);
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    fetchTasks();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,7 +104,8 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
                                     onPressed: () {
                                       Navigator.of(context).push(
                                           MaterialPageRoute(builder: (context) {
-                                        return TaskScreen(subTask: task[index]["subtask"]);
+                                        return TaskScreen(
+                                            subTask: task[index]["subtask"]);
                                       }));
                                     },
                                   ),
@@ -95,7 +127,10 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
                             content: Container(
                               height: MediaQuery.of(context).size.height * 0.9,
                               width: MediaQuery.of(context).size.width * 0.9,
-                              child: TaskForm(),
+                              child: TaskForm(
+                                  uId: widget.uId,
+                                  coId: widget.coId,
+                                  chId: widget.chId),
                             ),
                           );
                         },
