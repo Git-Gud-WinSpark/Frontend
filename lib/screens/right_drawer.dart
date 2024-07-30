@@ -21,6 +21,7 @@ class RightDrawer extends ConsumerStatefulWidget {
 
 class _RightDrawerState extends ConsumerState<RightDrawer> {
   List<Map<String, dynamic>> task = [];
+  List<int> completedTasks = [];
 
   void fetchTasks() async {
     var response = await getTasks(
@@ -34,6 +35,15 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
       if ((response["LiveTasks"] as List).isNotEmpty) {
         task = List<Map<String, dynamic>>.from(
             response["LiveTasks"][0]["liveTask"]);
+        task.forEach((element) {
+          int count = 0;
+          element['subtask'].forEach((subElement) {
+            if (subElement['status']) {
+              count++;
+            }
+          });
+          completedTasks.add(count);
+        });
       }
     });
   }
@@ -92,9 +102,12 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
                                       children: [
                                         Text(task[index]["name"]),
                                         LinearPercentIndicator(
+                                          animation: true,
                                           width: 150,
                                           lineHeight: 10,
-                                          percent: 0.5,
+                                          percent: completedTasks[index] /
+                                              (task[index]["subtask"] as List)
+                                                  .length,
                                           progressColor: Colors.blue,
                                         ),
                                       ]),
@@ -105,7 +118,13 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
                                       Navigator.of(context).push(
                                           MaterialPageRoute(builder: (context) {
                                         return TaskScreen(
-                                            subTask: task[index]["subtask"]);
+                                          subTask: task[index]["subtask"],
+                                          done: completedTasks[index],
+                                          uId: widget.uId,
+                                          chId: widget.chId,
+                                          coId: widget.coId,
+                                          liveID: task[index]["_id"],
+                                        );
                                       }));
                                     },
                                   ),

@@ -1,15 +1,29 @@
 import 'package:another_stepper/another_stepper.dart';
 import 'package:custom_timer/custom_timer.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
+import 'package:frontend/services/completeTask.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class TaskScreen extends ConsumerStatefulWidget {
-  const TaskScreen({super.key, required this.subTask});
-
+  const TaskScreen({
+    super.key,
+    required this.subTask,
+    required this.done,
+    required String this.uId,
+    required String this.coId,
+    required String this.chId,
+    required String this.liveID,
+  });
+  final String uId;
+  final String coId;
+  final String chId;
   final List<dynamic> subTask;
+  final int done;
+  final String liveID;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _TaskScreenState();
@@ -38,13 +52,46 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         end: Duration(),
         initialState: CustomTimerState.reset,
         interval: CustomTimerInterval.milliseconds);
+
+    _currentIndex = widget.done;
+    currentPercent = _currentIndex / widget.subTask.length;
     // TODO: implement initState
     super.initState();
+  }
+
+  void setComplete() async {
+    var res = await completeTask(
+        token: widget.uId,
+        communityID: widget.coId,
+        channelID: widget.chId,
+        taskID: widget.liveID,
+        subID: widget.subTask[_currentIndex]["_id"]);
+    print(res);
+  }
+
+  void onFinished() async {
+    setState(() {
+      if (_currentIndex < widget.subTask.length - 1) {
+        _currentIndex++;
+        duration = _parseDuration(widget.subTask[_currentIndex]['timeSpent']);
+        _controller.begin = duration!;
+      }
+      setComplete();
+    });
+    if (currentPercent < 1) {
+      currentPercent += (1 / widget.subTask.length);
+    }
+    _controller.reset();
   }
 
   @override
   Widget build(BuildContext context) {
     // print("Reneder $_currentIndex $duration");
+    _controller.state.addListener(() {
+      if (_controller.state.value == CustomTimerState.finished) {
+        onFinished();
+      }
+    });
     return Scaffold(
       appBar: AppBar(
         title: const Text('Task Screen'),
@@ -139,21 +186,12 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                 onPressed: () => _controller.reset(),
               ),
               RoundedButton(
-                  text: "Finish",
-                  color: Colors.red,
-                  onPressed: () {
-                    setState(() {
-                      if (_currentIndex < widget.subTask.length - 1) {
-                        _currentIndex++;
-                        duration = _parseDuration(
-                            widget.subTask[_currentIndex]['timeSpent']);
-                        _controller.begin = duration!;
-                      }
-                    });
-                    if (currentPercent < 1)
-                      currentPercent += (1 / widget.subTask.length);
-                    return _controller.reset();
-                  })
+                text: "Finish",
+                color: Colors.red,
+                onPressed: () {
+                  onFinished();
+                },
+              ),
             ],
           ),
         ],

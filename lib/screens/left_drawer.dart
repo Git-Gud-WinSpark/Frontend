@@ -10,8 +10,10 @@ import 'package:frontend/provider/token_provider.dart';
 import 'package:frontend/services/createChannel.dart';
 import 'package:frontend/services/createCommunity.dart';
 import 'package:frontend/services/getChats.dart';
+import 'package:frontend/widgets/addUserDialog.dart';
 import 'package:frontend/widgets/community_cards.dart';
 import 'package:frontend/widgets/community_icon.dart';
+import 'package:frontend/widgets/createChannelDialog.dart';
 import 'package:frontend/widgets/skills.dart';
 
 class LeftDrawer extends ConsumerStatefulWidget {
@@ -114,66 +116,23 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                               showDialog(
                                                 context: context,
                                                 builder: (context) =>
-                                                    AlertDialog(
-                                                  title: Text("Create Channel"),
-                                                  content: TextField(
-                                                    controller:
-                                                        channelNameController,
-                                                  ),
-                                                  actions: [
-                                                    ElevatedButton(
-                                                        onPressed: () {
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                        },
-                                                        child: Text("Cancel")),
-                                                    ElevatedButton(
-                                                        onPressed: () async {
-                                                          print(
-                                                              channelNameController
-                                                                  .text);
-
-                                                          print(
-                                                              "id: ${communityInfo.id}");
-
-                                                          var res = await createChannel(
-                                                              communityID:
-                                                                  communityInfo
-                                                                      .id!,
-                                                              channelName:
-                                                                  channelNameController
-                                                                      .text);
-                                                          print(res);
-                                                          if (res["status"] ==
-                                                              'Success') {
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop();
-                                                            ref
-                                                                .watch(
-                                                                    communityListProvider
-                                                                        .notifier)
-                                                                .addChannel(
-                                                                  communityInfo,
-                                                                  Channel(
-                                                                    name: channelNameController
-                                                                        .text,
-                                                                    id: res[
-                                                                        "channelID"],
-                                                                  ),
-                                                                );
-                                                            // widget.channelSelected(channelNameController.text);
-                                                          }
-                                                        },
-                                                        child: Text("Create")),
-                                                  ],
-                                                ),
+                                                  communityInfo.name !=
+                                                          "Private Chats"
+                                                      ?  createChannelDialog(
+                                                        channelNameController:
+                                                            channelNameController,
+                                                        communityInfo:
+                                                            communityInfo,
+                                                        ref: ref):Adduserdialog(ref: ref,),
                                               );
                                             },
-                                            child: const Column(
+                                            child: Column(
                                               children: [
                                                 Text(
-                                                  "Create Channel",
+                                                  communityInfo.name !=
+                                                          "Private Chats"
+                                                      ? "Create Channel"
+                                                      : "Add Friend",
                                                   style:
                                                       TextStyle(fontSize: 16),
                                                 ),
