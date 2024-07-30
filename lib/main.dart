@@ -7,12 +7,12 @@ import 'package:frontend/screens/chat_screen.dart';
 import 'package:frontend/screens/start_screen.dart';
 import 'package:frontend/screens/success.dart';
 
-void main() async {
-  // WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(ProviderScope(child: new MyApp()));
 }
 
 class MyApp extends ConsumerWidget {

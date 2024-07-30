@@ -3,7 +3,6 @@ import "dart:convert";
 import "package:frontend/common.dart";
 
 import "postRequest.dart";
-import "dart:io";
 
 dynamic registerUser(
     {required String name, required String email, required String password}) {

@@ -54,6 +54,8 @@ dependencies:
   percent_indicator: ^4.2.3
   another_stepper: ^1.2.2
   flutter_timer_countdown: ^1.0.7
+  date_field: ^5.2.1
+  custom_timer: ^0.2.3
 
 dev_dependencies:
   flutter_test:

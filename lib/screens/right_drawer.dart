@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/models/tasks.dart';
 import 'package:frontend/screens/task_screen.dart';
+import 'package:frontend/widgets/add_task_form.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class RightDrawer extends ConsumerStatefulWidget {
@@ -11,6 +13,7 @@ class RightDrawer extends ConsumerStatefulWidget {
 }
 
 class _RightDrawerState extends ConsumerState<RightDrawer> {
+  List<Map<String, dynamic>> task = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,75 +33,86 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
           const SizedBox(
             height: 20,
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                const Text(
-                  'Live Tasks',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8),
-                  child: ListView(
-                    shrinkWrap: true,
+          task.isNotEmpty
+              ? Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
                     children: [
-                      Card(
-                        child: ListTile(
-                          title: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Task 1'),
-                                LinearPercentIndicator(
-                                  width: 150,
-                                  lineHeight: 10,
-                                  percent: 0.5,
-                                  progressColor: Colors.blue,
-                                ),
-                              ]),
-                          subtitle: const Text('Description'),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.arrow_forward),
-                            onPressed: () {
-                              Navigator.of(context)
-                                  .push(MaterialPageRoute(builder: (context) {
-                                return TaskScreen();
-                              }));
-                            },
-                          ),
+                      const Text(
+                        'Live Tasks',
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Card(
-                        child: ListTile(
-                          title: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Task 2'),
-                                LinearPercentIndicator(
-                                  width: 150,
-                                  lineHeight: 10,
-                                  percent: 0.5,
-                                  progressColor: Colors.blue,
+                      Padding(
+                        padding: EdgeInsets.all(8),
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: task.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Card(
+                                child: ListTile(
+                                  title: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(task[index]["name"]),
+                                        LinearPercentIndicator(
+                                          width: 150,
+                                          lineHeight: 10,
+                                          percent: 0.5,
+                                          progressColor: Colors.blue,
+                                        ),
+                                      ]),
+                                  subtitle: const Text('Description'),
+                                  trailing: IconButton(
+                                    icon: const Icon(Icons.arrow_forward),
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(builder: (context) {
+                                        return TaskScreen(subTask: task[index]["subtask"]);
+                                      }));
+                                    },
+                                  ),
                                 ),
-                              ]),
-                          subtitle: const Text('Description'),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.arrow_forward),
-                            onPressed: () {},
-                          ),
-                        ),
+                              );
+                            }),
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-          ),
+                )
+              : Expanded(
+                  child: GestureDetector(
+                    onTap: () async {
+                      final result = await showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Enter Task Details'),
+                            content: Container(
+                              height: MediaQuery.of(context).size.height * 0.9,
+                              width: MediaQuery.of(context).size.width * 0.9,
+                              child: TaskForm(),
+                            ),
+                          );
+                        },
+                      );
+
+                      if (result != null) {
+                        setState(() {
+                          task = result;
+                          print(task);
+                        });
+                      }
+                    },
+                    child: Center(
+                      child: const Text("Click to Add some tasks"),
+                    ),
+                  ),
+                )
         ],
       ),
     );

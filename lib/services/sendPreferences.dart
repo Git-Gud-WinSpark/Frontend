@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:frontend/common.dart';
 
 import 'postRequest.dart';
-import 'dart:io';
 
 dynamic sendPreferences(
     {required String userID, required List<String> preferences}) {

@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:frontend/common.dart';
 
 import 'postRequest.dart';
-import 'dart:io';
 
 dynamic createCommunity(
     {required String token,

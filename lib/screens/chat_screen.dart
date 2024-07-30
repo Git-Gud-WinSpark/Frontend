@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -28,16 +29,19 @@ class ChatScreen extends ConsumerStatefulWidget {
 }
 
 class _ChatScreenState extends ConsumerState<ChatScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   List<types.Message> _messages = [];
   String title = "Channel Name";
   String id = "";
   String? commId;
   var _user;
+  bool _gotData = false;
   void _drawerData(dynamic data) {
     print(data);
     setState(() {
       title = data['name'];
       id = data['id'];
+      _gotData = true;
       var messages = (data["messages"] as List).map((e) {
         print(DateTime.parse(data["messages"][0]['timestamp'])
             .microsecondsSinceEpoch);
@@ -249,7 +253,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     commId = ref.read(communityProvider).id;
     initSocket();
     super.initState();
+    openDrawer();
     // _loadMessages();
+  }
+
+  openDrawer() async {
+    await Future.delayed(Duration.zero);
+    _scaffoldKey.currentState!.openDrawer();
   }
 
   IO.Socket? socket;
@@ -286,26 +296,27 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(
-        width: double.infinity,
-        child: LeftDrawer(channelSelected: _drawerData),
-      ),
+      key: _scaffoldKey,
+      drawerEnableOpenDragGesture: _gotData,
+      drawer: GestureDetector(
+          onHorizontalDragUpdate: (_) {
+            if (_gotData) {
+              _scaffoldKey.currentState!.closeDrawer();
+            }
+          },
+          child: Container(
+            width: double.infinity,
+            color: Colors.transparent,
+            child: Drawer(
+              width: double.infinity,
+              child: LeftDrawer(channelSelected: _drawerData),
+            ), //drawer
+          )),
       endDrawer: Drawer(
         child: RightDrawer(),
       ),
-      drawerEnableOpenDragGesture: true,
       appBar: AppBar(
         title: Text(title),
-        // leading: IconButton(
-        //   icon: Icon(Icons.arrow_back),
-        //   onPressed: () async {
-        //     final result = await Navigator.of(context).push(MaterialPageRoute(
-        //       builder: (context) => LeftDrawer(),
-        //       fullscreenDialog: true,
-        //     ));
-        //     print('Drawer closed with: $result');
-        //   },
-        // ),
       ),
       body: Chat(
         messages: _messages,

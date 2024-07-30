@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:frontend/common.dart';
 
 import 'postRequest.dart';
-import 'dart:io';
 
 dynamic getChats({required String channelId}) async {
   Uri url = Uri.parse("$urlStart/api/getChats");
