@@ -10,6 +10,7 @@ import 'package:frontend/provider/token_provider.dart';
 import 'package:frontend/services/createChannel.dart';
 import 'package:frontend/services/createCommunity.dart';
 import 'package:frontend/services/getChats.dart';
+import 'package:frontend/services/getPrivateChats.dart';
 import 'package:frontend/widgets/addUserDialog.dart';
 import 'package:frontend/widgets/community_cards.dart';
 import 'package:frontend/widgets/community_icon.dart';
@@ -109,21 +110,28 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
 
                                           child: ElevatedButton(
                                             onPressed: () {
-                                              print(communityInfo.id);
+                                              print(communityInfo.channels);
                                               TextEditingController
                                                   channelNameController =
                                                   TextEditingController();
                                               showDialog(
                                                 context: context,
-                                                builder: (context) =>
-                                                  communityInfo.name !=
-                                                          "Private Chats"
-                                                      ?  createChannelDialog(
+                                                builder: (context) => communityInfo
+                                                            .name !=
+                                                        "Private Chats"
+                                                    ? createChannelDialog(
                                                         channelNameController:
                                                             channelNameController,
                                                         communityInfo:
                                                             communityInfo,
-                                                        ref: ref):Adduserdialog(ref: ref,),
+                                                        ref: ref)
+                                                    : Adduserdialog(
+                                                        ref: ref,
+                                                        userSelected: widget
+                                                            .channelSelected,
+                                                        communityInfo:
+                                                            communityInfo,
+                                                      ),
                                               );
                                             },
                                             child: Column(
@@ -153,71 +161,83 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                           child: Container(
                             color: const Color.fromARGB(255, 94, 94, 94),
                             width: double.infinity,
-                            child: !isPvtChat
-                                ? Column(
-                                    children: [
-                                      const SizedBox(height: 10),
-                                      const Text("Channels",
-                                          style: TextStyle(
-                                              fontSize: 25,
-                                              color: Colors.white)),
-                                      const SizedBox(height: 10),
-                                      Expanded(
-                                          child: Container(
-                                        margin: EdgeInsets.all(10),
-                                        child: (communityInfo.channels != null)
-                                            ? ListView.builder(
-                                                itemBuilder: (context, index) {
-                                                  return InkWell(
-                                                    onTap: () async {
-                                                      Navigator.of(context).pop(
-                                                        communityInfo
-                                                            .channels![index],
-                                                      );
-                                                      var res = await getChats(
-                                                          channelId:
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 10),
+                                Text(
+                                    communityInfo.name != "Private Chats"
+                                        ? "Channels"
+                                        : "Contacts",
+                                    style: TextStyle(
+                                        fontSize: 25, color: Colors.white)),
+                                const SizedBox(height: 10),
+                                Expanded(
+                                    child: Container(
+                                  margin: EdgeInsets.all(10),
+                                  child: (communityInfo.channels != null)
+                                      ? ListView.builder(
+                                          itemBuilder: (context, index) {
+                                            return InkWell(
+                                              onTap: () async {
+                                                Navigator.of(context).pop(
+                                                  communityInfo
+                                                      .channels![index],
+                                                );
+                                                if (communityInfo.name !=
+                                                    "Private Chats") {
+                                                  var res = await getChats(
+                                                      channelId: communityInfo
+                                                          .channels![index]
+                                                          .id!);
+                                                  print(res);
+                                                  widget.channelSelected({
+                                                    'name': communityInfo
+                                                        .channels![index].name,
+                                                    'id': communityInfo
+                                                        .channels![index].id,
+                                                    'messages': res["chat"],
+                                                    'mode': "p2c",
+                                                  });
+                                                } else {
+                                                  var res =
+                                                      await getPrivateChats(
+                                                          userID: userID,
+                                                          receiverID:
                                                               communityInfo
                                                                   .channels![
                                                                       index]
                                                                   .id!);
-                                                      print(res);
-                                                      widget.channelSelected({
-                                                        'name': communityInfo
-                                                            .channels![index]
-                                                            .name,
-                                                        'id': communityInfo
-                                                            .channels![index]
-                                                            .id,
-                                                        'messages': res["chat"]
-                                                      });
-                                                    },
-                                                    child: Container(
-                                                      margin: EdgeInsets.only(
-                                                          bottom: 5),
-                                                      child: Text(
-                                                        communityInfo
-                                                            .channels![index]
-                                                            .name,
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontSize: 20),
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                                itemCount: communityInfo
-                                                    .channels!.length,
-                                              )
-                                            : Text("No Channels"),
-                                      ))
-                                    ],
-                                  )
-                                : Column(children: [
-                                    const SizedBox(height: 10),
-                                    const Text("Chats",
-                                        style: TextStyle(
-                                            fontSize: 25, color: Colors.white)),
-                                  ]),
+                                                  print(res);
+                                                  widget.channelSelected({
+                                                    'name': communityInfo
+                                                        .channels![index].name,
+                                                    'id': communityInfo
+                                                        .channels![index].id,
+                                                    'messages': res["chat"],
+                                                    'mode': "p2p",
+                                                  });
+                                                }
+                                              },
+                                              child: Container(
+                                                margin:
+                                                    EdgeInsets.only(bottom: 5),
+                                                child: Text(
+                                                  communityInfo
+                                                      .channels![index].name,
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 20),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          itemCount:
+                                              communityInfo.channels!.length,
+                                        )
+                                      : Text("No Channels"),
+                                ))
+                              ],
+                            ),
                           ),
                         ),
                       ],

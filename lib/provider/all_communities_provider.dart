@@ -18,6 +18,7 @@ class AllCommunityListNotifier extends StateNotifier<List<Community>> {
   void addCommunity(Community community) {
     state = [...state, community];
   }
+
 }
 
 final allCommunityListProvider =

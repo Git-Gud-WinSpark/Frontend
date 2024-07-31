@@ -6,6 +6,7 @@ import 'package:frontend/provider/community_list_provider.dart';
 import 'package:frontend/provider/login_provider.dart';
 import 'package:frontend/provider/preference_provider.dart';
 import 'package:frontend/provider/token_provider.dart';
+import 'package:frontend/services/fetchChatPrivate.dart';
 import 'package:frontend/services/getCommunities.dart';
 import 'package:frontend/services/listCommunities.dart';
 import 'package:frontend/services/login.dart';
@@ -62,6 +63,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           ref
               .watch(communityListProvider.notifier)
               .storeCommunities(communities);
+
+
 
           print("Done");
           Navigator.of(context).pop();

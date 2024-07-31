@@ -3,16 +3,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/models/channel.dart';
 import 'package:frontend/models/community.dart';
 import 'package:frontend/provider/community_list_provider.dart';
+import 'package:frontend/provider/token_provider.dart';
 import 'package:frontend/services/createChannel.dart';
 import 'package:frontend/services/getUserFromUserName.dart';
+import 'package:frontend/services/sendChatPrivate.dart';
 
 class Adduserdialog extends StatefulWidget {
   const Adduserdialog({
     super.key,
     required this.ref,
+    required this.userSelected,
+    required this.communityInfo,
   });
 
   final WidgetRef ref;
+  final Function(dynamic) userSelected;
+  final Community communityInfo;
 
   @override
   State<Adduserdialog> createState() => _AdduserdialogState();
@@ -44,8 +50,28 @@ class _AdduserdialogState extends State<Adduserdialog> {
                   return ListTile(
                     title: Text(users[index]['username']),
                     subtitle: Text(users[index]['email']),
-                    onTap: () {
-                      
+                    onTap: () async {
+                      widget.userSelected({
+                        "name": users[index]["username"],
+                        "id": users[index]["_id"],
+                        "messages": [],
+                        "mode": "p2p",
+                      });
+                      String userID = widget.ref.watch(tokenProvider);
+                      var res = await sendChatPrivate(
+                          userID: userID,
+                          receiverID: users[index]["_id"],
+                          message: "Started Chat.");
+                      Navigator.of(context).pop();
+                      widget.ref
+                          .watch(communityListProvider.notifier)
+                          .addChannel(
+                            widget.communityInfo,
+                            Channel(
+                              name: users[index]["username"],
+                              id: users[index]["_id"],
+                            ),
+                          );
                     },
                   );
                 },

@@ -4,7 +4,10 @@ import 'dart:io' as io;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/models/channel.dart';
 import 'package:frontend/models/community.dart';
+import 'package:frontend/provider/community_list_provider.dart';
 import 'package:frontend/provider/community_provider.dart';
+import 'package:frontend/provider/token_provider.dart';
+import 'package:frontend/services/fetchChatPrivate.dart';
 
 class CommunityIcon extends ConsumerWidget {
   const CommunityIcon({
@@ -25,10 +28,24 @@ class CommunityIcon extends ConsumerWidget {
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
       alignment: Alignment.centerLeft,
       child: InkWell(
-        onTap: () {
-          ref.watch(communityProvider.notifier).selectedCommunity(
-              Community(id: id, name: name, channels: channels));
-          print(name);
+        onTap: () async {
+          if (id == "1234") {
+            String uID = ref.read(tokenProvider);
+            print(uID);
+            var res = await fetchChatPrivate(userID: uID);
+            if (res["status"] == "Success") {
+              ref.watch(communityProvider.notifier).selectedCommunity(Community(
+                  id: id,
+                  name: name,
+                  channels: (res["conversation"] as List)
+                      .map((e) => Channel(name: e["username"], id: e["_id"]))
+                      .toList()));
+            }
+          } else {
+            ref.watch(communityProvider.notifier).selectedCommunity(
+                Community(id: id, name: name, channels: channels));
+            print(name);
+          }
         },
         child: CircleAvatar(
           backgroundImage:

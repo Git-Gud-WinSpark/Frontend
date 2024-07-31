@@ -37,18 +37,20 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   String? userID;
   var _user;
   bool _gotData = false;
+  var mode = "p2c";
   void _drawerData(dynamic data) {
-    print(data);
+    print("Inside drawer: $data");
     setState(() {
       title = data['name'];
       id = data['id'];
       _gotData = true;
+      mode = data['mode'];
       var messages = (data["messages"] as List).map((e) {
         return types.TextMessage(
           id: e['_id'],
           author: types.User(id: e['senderID']),
           createdAt: DateTime.parse(e['timestamp']).millisecondsSinceEpoch,
-          text: e['message'],
+          text: e['message'] ?? "",
         );
       }).toList();
       messages.sort(
@@ -225,12 +227,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   void _handleSendPressed(
       types.PartialText message, String? comm_id, String channel_id) {
-    socket!.emit('messagep2c', {
-      'msg': message.text,
-      'id': _user.id,
-      'comm_id': comm_id,
-      'channel_id': channel_id
-    });
+    if (mode == "p2c") {
+      socket!.emit('messagep2c', {
+        'msg': message.text,
+        'id': _user.id,
+        'comm_id': comm_id,
+        'channel_id': channel_id
+      });
+    } else if (mode == "p2p") {
+      print("Inside p2p");
+      socket!.emit('messagep2p',
+          {'msg': message.text, 'id': _user.id, 'targetID': channel_id});
+    }
     final textMessage = types.TextMessage(
       author: _user,
       createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -279,13 +287,26 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       print(data);
       print(data['message']);
       setState(() {
-        if (data['comm_id'] == commId && data['channel_id'] == id)
+        if (data['comm_id'] == commId && data['channel_id'] == id) {
           _addMessage(types.TextMessage(
             author: types.User(id: data['id']),
             createdAt: DateTime.now().millisecondsSinceEpoch,
             id: const Uuid().v4(),
             text: data['message'],
           ));
+        }
+      });
+    });
+    socket!.on('messagep2p', (data) {
+      print("insideSOcket p2p");
+      print(data);
+      setState(() {
+        _addMessage(types.TextMessage(
+          author: types.User(id: data["targetID"]),
+          createdAt: DateTime.now().millisecondsSinceEpoch,
+          id: const Uuid().v4(),
+          text: data["msg"],
+        ));
       });
     });
   }
