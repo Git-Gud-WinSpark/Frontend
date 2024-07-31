@@ -1,3 +1,4 @@
+import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,21 +23,25 @@ class MyApp extends ConsumerWidget {
     bool preferenceSet = ref.watch(preferenceProvider).isNotEmpty;
     print(preferenceSet);
     bool isLogin = ref.watch(loginProvider);
-    return MaterialApp(
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFFF8476)),
-        appBarTheme: AppBarTheme(
-          backgroundColor: Color.fromARGB(255, 9, 13, 86),
-          foregroundColor: Colors.white,
+    return CalendarControllerProvider(
+      controller: EventController(),
+      child: MaterialApp(
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFFF8476)),
+          appBarTheme: AppBarTheme(
+            backgroundColor: Color.fromARGB(255, 9, 13, 86),
+            foregroundColor: Colors.white,
+          ),
+          scaffoldBackgroundColor: Color.fromARGB(255, 5, 7, 44),
+          useMaterial3: true,
         ),
-        useMaterial3: true,
-      ),
-      home: SafeArea(
-        child: isLogin
-            ? preferenceSet
-                ? ChatScreen()
-                : const Success()
-            : const Startscreen(),
+        home: SafeArea(
+          child: isLogin
+              ? preferenceSet
+                  ? ChatScreen()
+                  : const Success()
+              : const Startscreen(),
+        ),
       ),
     );
   }

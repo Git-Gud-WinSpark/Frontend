@@ -55,7 +55,7 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                   child: Column(children: [
                     Expanded(
                       child: Container(
-                        color: Color.fromARGB(255, 47, 47, 47),
+                        color: Color.fromARGB(255, 22, 24, 33),
                         child: Stack(children: [
                           CommunityIcon(
                             id: "1234",
@@ -69,7 +69,7 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                     Expanded(
                       flex: 6,
                       child: Container(
-                        color: Color.fromARGB(255, 57, 57, 57),
+                        color: Color.fromARGB(255, 28, 25, 47),
                         child: ListView.builder(
                           itemBuilder: (context, index) {
                             return CommunityIcon(
@@ -92,7 +92,7 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                       children: [
                         Expanded(
                           child: Container(
-                            color: const Color.fromARGB(255, 35, 35, 35),
+                            color: Color.fromARGB(255, 21, 23, 47),
                             width: double.infinity,
                             alignment: Alignment.topCenter,
                             padding: EdgeInsets.all(10),
@@ -114,7 +114,7 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                         child: Container(
                                           // color: Colors.green,
                                           margin: EdgeInsets.symmetric(
-                                              horizontal: 10, vertical: 10),
+                                              horizontal: 10, vertical: 15),
 
                                           child: ElevatedButton(
                                             onPressed: () {
@@ -147,8 +147,8 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                                 Text(
                                                   communityInfo.name !=
                                                           "Private Chats"
-                                                      ? "Create Channel"
-                                                      : "Add Friend",
+                                                      ? "+ Create Channel"
+                                                      : "+ Add Friend",
                                                   style:
                                                       TextStyle(fontSize: 16),
                                                 ),
@@ -167,7 +167,7 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                         Expanded(
                           flex: 5,
                           child: Container(
-                            color: const Color.fromARGB(255, 94, 94, 94),
+                            color: Color.fromARGB(255, 28, 25, 56),
                             width: double.infinity,
                             child: Column(
                               children: [
@@ -255,92 +255,200 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
           ),
           Expanded(
             child: Container(
-              color: Color.fromARGB(255, 25, 25, 25),
+              color: Color.fromARGB(255, 22, 19, 40),
               width: double.infinity,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      List<String> tags = [];
-                      TextEditingController nameController =
-                          TextEditingController();
-                      File? _selectedImage = null;
-                      showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                                title: Text("Create Community"),
-                                content: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.9,
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: UserImagePicker(
-                                              onPickImage: (pickedImage) {
-                                                _selectedImage = pickedImage;
-                                              },
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: TextField(
-                                              controller: nameController,
-                                              decoration: InputDecoration(
-                                                hintText: "Community Name",
+                  Container(
+                    margin: EdgeInsets.all(8),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        List<String> tags = [];
+                        TextEditingController nameController =
+                            TextEditingController();
+                        File? _selectedImage = null;
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                                  title: Text("Create Community"),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.9,
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              child: UserImagePicker(
+                                                onPickImage: (pickedImage) {
+                                                  _selectedImage = pickedImage;
+                                                },
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    Row(children: [
-                                      Text("Select Tags: "),
-                                      Expanded(
-                                        child: Container(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.9,
-                                          height: 50,
-                                          child: ListView.builder(
-                                            scrollDirection: Axis.horizontal,
-                                            shrinkWrap: true,
-                                            itemBuilder: (context, index) {
-                                              void _togglePreference(
-                                                  String preference,
-                                                  bool value) {
-                                                setState(() {
-                                                  if (!value) {
-                                                    if (tags
-                                                        .contains(preference)) {
-                                                      tags.remove(preference);
-                                                    }
-                                                  } else {
-                                                    if (!tags
-                                                        .contains(preference)) {
-                                                      tags.add(preference);
-                                                    }
-                                                  }
-                                                });
-                                              }
-
-                                              return ToggleSkills(
-                                                text: skills[index],
-                                                onToggle: _togglePreference,
-                                              );
-                                            },
-                                            itemCount: skills.length,
-                                          ),
+                                            Expanded(
+                                              child: TextField(
+                                                controller: nameController,
+                                                decoration: InputDecoration(
+                                                  hintText: "Community Name",
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      )
-                                    ]),
+                                      ),
+                                      const SizedBox(
+                                        height: 20,
+                                      ),
+                                      Row(children: [
+                                        Text("Select Tags: "),
+                                        Expanded(
+                                          child: Container(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.9,
+                                            height: 50,
+                                            child: ListView.builder(
+                                              scrollDirection: Axis.horizontal,
+                                              shrinkWrap: true,
+                                              itemBuilder: (context, index) {
+                                                void _togglePreference(
+                                                    String preference,
+                                                    bool value) {
+                                                  setState(() {
+                                                    if (!value) {
+                                                      if (tags.contains(
+                                                          preference)) {
+                                                        tags.remove(preference);
+                                                      }
+                                                    } else {
+                                                      if (!tags.contains(
+                                                          preference)) {
+                                                        tags.add(preference);
+                                                      }
+                                                    }
+                                                  });
+                                                }
+
+                                                return ToggleSkills(
+                                                  text: skills[index],
+                                                  onToggle: _togglePreference,
+                                                );
+                                              },
+                                              itemCount: skills.length,
+                                            ),
+                                          ),
+                                        )
+                                      ]),
+                                    ],
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text("Cancel"),
+                                    ),
+                                    TextButton(
+                                      onPressed: () async {
+                                        print(nameController.text);
+                                        print(userID);
+                                        String? base64Image;
+                                        if (_selectedImage != null) {
+                                          List<int> imageBytes =
+                                              await _selectedImage!
+                                                  .readAsBytesSync();
+                                          print(imageBytes);
+                                          base64Image =
+                                              base64Encode(imageBytes);
+                                          print(base64Image);
+                                        }
+                                        var res = await createCommunity(
+                                          token: userID,
+                                          communityName: nameController.text,
+                                          tags: tags,
+                                          profilePic: base64Image,
+                                        );
+                                        print(res);
+                                        if (res['status'] == 'Success') {
+                                          Navigator.of(context).pop();
+                                          ref
+                                              .watch(communityListProvider
+                                                  .notifier)
+                                              .addCommunity(Community(
+                                                id: res["communityID"],
+                                                name: nameController.text,
+                                                imageUrl: base64Image,
+                                                channels: [],
+                                              ));
+                                        }
+                                      },
+                                      child: Text("Create"),
+                                    ),
                                   ],
+                                ));
+                      },
+                      child: const Column(
+                        children: [
+                          Icon(Icons.add),
+                          Text("Add"),
+                        ],
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(horizontal: 32),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.all(8),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        List<Community> communityList =
+                            ref.read(allCommunityListProvider);
+                        final storeAllComm = await listCommunities();
+                        // print(storeAllComm["ListofAllCommunities"]);
+                        ref
+                            .watch(allCommunityListProvider.notifier)
+                            .storeCommunities(
+                                storeAllComm["ListofAllCommunities"]);
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text("Join Community"),
+                                content: Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.9,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.9,
+                                  child: Column(
+                                    children: [
+                                      TextField(
+                                        decoration: InputDecoration(
+                                          hintText: 'Community Name',
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      Text("Communities..."),
+                                      Expanded(
+                                        child: ListView.builder(
+                                          itemBuilder: (context, index) {
+                                            // return Text(
+                                            // communityList[index].name);
+                                            return CommunityCard(
+                                              id: communityList[index].id,
+                                              name: communityList[index].name,
+                                              tags: communityList[index].tags,
+                                            );
+                                          },
+                                          itemCount: communityList.length,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                                 actions: [
                                   TextButton(
@@ -349,116 +457,19 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                     },
                                     child: Text("Cancel"),
                                   ),
-                                  TextButton(
-                                    onPressed: () async {
-                                      print(nameController.text);
-                                      print(userID);
-                                      String? base64Image;
-                                      if (_selectedImage != null) {
-                                        List<int> imageBytes =
-                                            await _selectedImage!
-                                                .readAsBytesSync();
-                                        print(imageBytes);
-                                        base64Image = base64Encode(imageBytes);
-                                        print(base64Image);
-                                      }
-                                      var res = await createCommunity(
-                                        token: userID,
-                                        communityName: nameController.text,
-                                        tags: tags,
-                                        profilePic: base64Image,
-                                      );
-                                      print(res);
-                                      if (res['status'] == 'Success') {
-                                        Navigator.of(context).pop();
-                                        ref
-                                            .watch(
-                                                communityListProvider.notifier)
-                                            .addCommunity(Community(
-                                              id: res["communityID"],
-                                              name: nameController.text,
-                                              imageUrl: base64Image,
-                                              channels: [],
-                                            ));
-                                      }
-                                    },
-                                    child: Text("Create"),
-                                  ),
                                 ],
-                              ));
-                    },
-                    child: const Column(
-                      children: [
-                        Icon(Icons.add),
-                        Text("Add"),
-                      ],
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      List<Community> communityList =
-                          ref.read(allCommunityListProvider);
-                      final storeAllComm = await listCommunities();
-                      // print(storeAllComm["ListofAllCommunities"]);
-                      ref
-                          .watch(allCommunityListProvider.notifier)
-                          .storeCommunities(
-                              storeAllComm["ListofAllCommunities"]);
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: Text("Join Community"),
-                              content: Container(
-                                width: MediaQuery.of(context).size.width * 0.9,
-                                height:
-                                    MediaQuery.of(context).size.height * 0.9,
-                                child: Column(
-                                  children: [
-                                    TextField(
-                                      decoration: InputDecoration(
-                                        hintText: 'Community Name',
-                                      ),
-                                    ),
-                                    SizedBox(height: 10),
-                                    Text("Communities..."),
-                                    Expanded(
-                                      child: ListView.builder(
-                                        itemBuilder: (context, index) {
-                                          // return Text(
-                                          // communityList[index].name);
-                                          return CommunityCard(
-                                            id: communityList[index].id,
-                                            name: communityList[index].name,
-                                            tags: communityList[index].tags,
-                                          );
-                                        },
-                                        itemCount: communityList.length,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text("Cancel"),
-                                ),
-                                // TextButton(
-                                //   onPressed: () {},
-                                //   child: Text("Join"),
-                                // ),
-                              ],
-                            );
-                          });
-                    },
-                    child: const Column(
-                      children: [
-                        Icon(Icons.person_add),
-                        Text("Join"),
-                      ],
+                              );
+                            });
+                      },
+                      child: const Column(
+                        children: [
+                          Icon(Icons.person_add),
+                          Text("Join"),
+                        ],
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(horizontal: 32),
+                      ),
                     ),
                   ),
                 ],

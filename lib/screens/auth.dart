@@ -151,7 +151,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(height: 20),
-            Text("Welcome to Git Gud",
+            Text("Welcome to STU{CO}",
                 style: Theme.of(context).textTheme.headlineSmall),
             Card(
               margin: const EdgeInsets.all(20),

@@ -46,6 +46,7 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
           completedTasks.add(count);
         });
       }
+      print(task);
     });
   }
 
@@ -58,139 +59,166 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
 
   @override
   Widget build(BuildContext context) {
-    return CalendarControllerProvider(
-      controller: EventController(),
-      child: MaterialApp(
-        home: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Theme.of(context).colorScheme.secondary,
-            //add icon for productivity
-            leading: IconButton(
-              icon: const Icon(Icons.trending_up),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+    return
+        // CalendarControllerProvider(
+        //   controller: EventController(),
+        // child: MaterialApp(
+        //   theme: ThemeData(
+        //     colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFFF8476)),
+        //     appBarTheme: AppBarTheme(
+        //       backgroundColor: Color.fromARGB(255, 9, 13, 86),
+        //       foregroundColor: Colors.white,
+        //     ),
+        //     useMaterial3: true,
+        //     scaffoldBackgroundColor: Color.fromARGB(255, 5, 7, 44),
+        //   ),
+        //   home:
+        Scaffold(
+      appBar: AppBar(
+        //add icon for productivity
+        leading: IconButton(
+          icon: const Icon(Icons.trending_up),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: const Text('Productivity'),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+              child: Container(
+            margin: EdgeInsets.all(16),
+            child: MonthView(
+              showBorder: true,
+              cellAspectRatio: 0.5,
             ),
-            title: const Text('Productivity'),
+          )),
+          const SizedBox(
+            height: 20,
           ),
-          body: Column(
-            children: [
-              Expanded(child: MonthView()),
-              const SizedBox(
-                height: 20,
-              ),
-              task.isNotEmpty
-                  ? Expanded(
-                      flex: 1,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            const Text(
-                              'Live Tasks',
-                              style: TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(8),
-                              child: ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: task.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return Card(
-                                      child: ListTile(
-                                        title: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(task[index]["name"]),
-                                              LinearPercentIndicator(
-                                                animation: true,
-                                                width: 150,
-                                                lineHeight: 10,
-                                                percent: index <
-                                                        completedTasks.length
+          task.isNotEmpty
+              ? Expanded(
+                  flex: 1,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        const Text(
+                          'Live Tasks',
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(8),
+                          child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: task.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                Future.delayed(Durations.medium3, () {
+                                  CalendarControllerProvider.of(context)
+                                      .controller
+                                      .add(
+                                        CalendarEventData(
+                                          title: task[index]["name"],
+                                          date: DateTime.parse(
+                                            task[index]["completionTime"],
+                                          ),
+                                        ),
+                                      );
+                                });
+                                return Card(
+                                  child: ListTile(
+                                    title: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(task[index]["name"]),
+                                          LinearPercentIndicator(
+                                            animation: true,
+                                            width: 150,
+                                            lineHeight: 10,
+                                            percent:
+                                                index < completedTasks.length
                                                     ? completedTasks[index] /
                                                         (task[index]["subtask"]
                                                                 as List)
                                                             .length
                                                     : 0.0,
-                                                progressColor: Colors.blue,
-                                              ),
-                                            ]),
-                                        subtitle: const Text('Description'),
-                                        trailing: IconButton(
-                                          icon: const Icon(Icons.arrow_forward),
-                                          onPressed: () {
-                                            Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                    builder: (context) {
-                                              return TaskScreen(
-                                                subTask: task[index]["subtask"],
-                                                done: index <
-                                                        completedTasks.length
-                                                    ? completedTasks[index]
-                                                    : 0,
-                                                uId: widget.uId,
-                                                chId: widget.chId,
-                                                coId: widget.coId,
-                                                liveID: task[index]["_id"],
-                                              );
-                                            }));
-                                          },
-                                        ),
-                                      ),
-                                    );
-                                  }),
+                                            progressColor: Colors.blue,
+                                          ),
+                                        ]),
+                                    subtitle: const Text('Description'),
+                                    trailing: IconButton(
+                                      icon: const Icon(Icons.arrow_forward),
+                                      onPressed: () {
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) {
+                                          return TaskScreen(
+                                            subTask: task[index]["subtask"],
+                                            done: index < completedTasks.length
+                                                ? completedTasks[index]
+                                                : 0,
+                                            uId: widget.uId,
+                                            chId: widget.chId,
+                                            coId: widget.coId,
+                                            liveID: task[index]["_id"],
+                                          );
+                                        }));
+                                      },
+                                    ),
+                                  ),
+                                );
+                              }),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : Expanded(
+                  child: GestureDetector(
+                    onTap: () async {
+                      final result = await showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            content: Container(
+                              height: MediaQuery.of(context).size.height * 0.9,
+                              width: MediaQuery.of(context).size.width * 0.9,
+                              child: TaskForm(
+                                  uId: widget.uId,
+                                  coId: widget.coId,
+                                  chId: widget.chId),
                             ),
-                          ],
-                        ),
-                      ),
-                    )
-                  : Expanded(
-                      child: GestureDetector(
-                        onTap: () async {
-                          final result = await showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('Enter Task Details'),
-                                content: Container(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.9,
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.9,
-                                  child: TaskForm(
-                                      uId: widget.uId,
-                                      coId: widget.coId,
-                                      chId: widget.chId),
-                                ),
-                              );
-                            },
                           );
-                          print("aob");
-                          print(result);
-                          if (result != null) {
-                            setState(() {
-                              task = result;
-                              print(task);
-                            });
-                          }
                         },
-                        child: Center(
-                          child: const Text("Click to Add some tasks"),
-                        ),
+                      );
+                      print("aob");
+                      print(result);
+                      if (result != null) {
+                        setState(() {
+                          task = result;
+                          print(task);
+                        });
+                      }
+                    },
+                    child: Center(
+                      child: const Text(
+                        "Click to Add some tasks",
+                        style: TextStyle(color: Colors.white),
                       ),
-                    )
-            ],
-          ),
-        ),
+                    ),
+                  ),
+                )
+        ],
       ),
+      //   ),
+      // ),
     );
   }
 }

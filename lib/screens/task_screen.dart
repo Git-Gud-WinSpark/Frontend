@@ -125,6 +125,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             style: TextStyle(
               fontSize: 30,
               fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
           ),
           const SizedBox(
@@ -146,6 +147,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
           ),
           const SizedBox(
@@ -156,6 +158,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             style: TextStyle(
               fontSize: 30,
               fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
           ),
           Padding(
@@ -166,7 +169,12 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                 for (var index = 0; index < widget.subTask.length; index++)
                   StepperData(
                     // WHat i can do is make an interactive icon like start and pause and when the task finishes show tick mark and move to next one.
-                    title: StepperText(widget.subTask[index]["name"]),
+                    title: StepperText(
+                      widget.subTask[index]["name"],
+                      textStyle: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
               ],
               stepperDirection: Axis.vertical,
@@ -178,10 +186,13 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
           CustomTimer(
             controller: _controller,
             builder: (state, time) {
-              // Build the widget you want!🎉
               return Text(
-                  "${time.hours}:${time.minutes}:${time.seconds}.${time.milliseconds}",
-                  style: TextStyle(fontSize: 24.0));
+                "${time.hours}:${time.minutes}:${time.seconds}.${time.milliseconds}",
+                style: TextStyle(
+                  fontSize: 24.0,
+                  color: Colors.white,
+                ),
+              );
             },
           ),
           SizedBox(height: 24.0),

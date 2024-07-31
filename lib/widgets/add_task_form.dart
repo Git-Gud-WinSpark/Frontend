@@ -83,9 +83,14 @@ class _TaskFormState extends State<TaskForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Task Form'),
+        title: Text(
+          'Task Form',
+        ),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
       ),
       body: Container(
+        color: Colors.white,
         width: MediaQuery.of(context).size.width * 0.9,
         height: MediaQuery.of(context).size.height * 0.9,
         child: SingleChildScrollView(

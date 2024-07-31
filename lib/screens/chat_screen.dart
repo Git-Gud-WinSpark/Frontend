@@ -335,6 +335,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ),
       appBar: AppBar(
         title: Text(title),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+        ),
       ),
       body: Chat(
         theme: DarkChatTheme(),
