@@ -25,6 +25,10 @@ class MyApp extends ConsumerWidget {
     return MaterialApp(
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFFF8476)),
+        appBarTheme: AppBarTheme(
+          backgroundColor: Color.fromARGB(255, 9, 13, 86),
+          foregroundColor: Colors.white,
+        ),
         useMaterial3: true,
       ),
       home: SafeArea(

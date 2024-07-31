@@ -57,6 +57,7 @@ class _CommunityCardState extends ConsumerState<CommunityCard> {
                 if (community == false && widget.id != null) {
                   var res = await addCommunity(
                       token: userId, communityId: widget.id!);
+                  print(res);
                   if (res['status'] == 'Success') {
                     ref.watch(communityListProvider.notifier).addCommunity(
                           Community(
@@ -65,6 +66,7 @@ class _CommunityCardState extends ConsumerState<CommunityCard> {
                             channels: (res['Channels'] as List)
                                 .map((e) => Channel.fromJson(e))
                                 .toList(),
+                            imageUrl: res['profilePicture'],
                           ),
                         ); //need to add channels once api returns it
                   }

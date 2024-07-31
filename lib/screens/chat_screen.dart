@@ -337,6 +337,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         title: Text(title),
       ),
       body: Chat(
+        theme: DarkChatTheme(),
         messages: _messages,
         onAttachmentPressed: _handleAttachmentPressed,
         onMessageTap: _handleMessageTap,

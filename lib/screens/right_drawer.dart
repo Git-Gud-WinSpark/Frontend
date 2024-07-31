@@ -1,3 +1,4 @@
+import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/models/tasks.dart';
@@ -57,117 +58,138 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.secondary,
-        //add icon for productivity
-        leading: IconButton(
-          icon: const Icon(Icons.trending_up),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: const Text('Productivity'),
-      ),
-      body: Column(
-        children: [
-          const SizedBox(
-            height: 20,
+    return CalendarControllerProvider(
+      controller: EventController(),
+      child: MaterialApp(
+        home: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Theme.of(context).colorScheme.secondary,
+            //add icon for productivity
+            leading: IconButton(
+              icon: const Icon(Icons.trending_up),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            title: const Text('Productivity'),
           ),
-          task.isNotEmpty
-              ? Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      const Text(
-                        'Live Tasks',
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
+          body: Column(
+            children: [
+              Expanded(child: MonthView()),
+              const SizedBox(
+                height: 20,
+              ),
+              task.isNotEmpty
+                  ? Expanded(
+                      flex: 1,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            const Text(
+                              'Live Tasks',
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(8),
+                              child: ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: task.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return Card(
+                                      child: ListTile(
+                                        title: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(task[index]["name"]),
+                                              LinearPercentIndicator(
+                                                animation: true,
+                                                width: 150,
+                                                lineHeight: 10,
+                                                percent: index <
+                                                        completedTasks.length
+                                                    ? completedTasks[index] /
+                                                        (task[index]["subtask"]
+                                                                as List)
+                                                            .length
+                                                    : 0.0,
+                                                progressColor: Colors.blue,
+                                              ),
+                                            ]),
+                                        subtitle: const Text('Description'),
+                                        trailing: IconButton(
+                                          icon: const Icon(Icons.arrow_forward),
+                                          onPressed: () {
+                                            Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) {
+                                              return TaskScreen(
+                                                subTask: task[index]["subtask"],
+                                                done: index <
+                                                        completedTasks.length
+                                                    ? completedTasks[index]
+                                                    : 0,
+                                                uId: widget.uId,
+                                                chId: widget.chId,
+                                                coId: widget.coId,
+                                                liveID: task[index]["_id"],
+                                              );
+                                            }));
+                                          },
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                            ),
+                          ],
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.all(8),
-                        child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: task.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Card(
-                                child: ListTile(
-                                  title: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(task[index]["name"]),
-                                        LinearPercentIndicator(
-                                          animation: true,
-                                          width: 150,
-                                          lineHeight: 10,
-                                          percent: completedTasks[index] /
-                                              (task[index]["subtask"] as List)
-                                                  .length,
-                                          progressColor: Colors.blue,
-                                        ),
-                                      ]),
-                                  subtitle: const Text('Description'),
-                                  trailing: IconButton(
-                                    icon: const Icon(Icons.arrow_forward),
-                                    onPressed: () {
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(builder: (context) {
-                                        return TaskScreen(
-                                          subTask: task[index]["subtask"],
-                                          done: completedTasks[index],
-                                          uId: widget.uId,
-                                          chId: widget.chId,
-                                          coId: widget.coId,
-                                          liveID: task[index]["_id"],
-                                        );
-                                      }));
-                                    },
-                                  ),
+                    )
+                  : Expanded(
+                      child: GestureDetector(
+                        onTap: () async {
+                          final result = await showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Enter Task Details'),
+                                content: Container(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.9,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.9,
+                                  child: TaskForm(
+                                      uId: widget.uId,
+                                      coId: widget.coId,
+                                      chId: widget.chId),
                                 ),
                               );
-                            }),
-                      ),
-                    ],
-                  ),
-                )
-              : Expanded(
-                  child: GestureDetector(
-                    onTap: () async {
-                      final result = await showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text('Enter Task Details'),
-                            content: Container(
-                              height: MediaQuery.of(context).size.height * 0.9,
-                              width: MediaQuery.of(context).size.width * 0.9,
-                              child: TaskForm(
-                                  uId: widget.uId,
-                                  coId: widget.coId,
-                                  chId: widget.chId),
-                            ),
+                            },
                           );
+                          print("aob");
+                          print(result);
+                          if (result != null) {
+                            setState(() {
+                              task = result;
+                              print(task);
+                            });
+                          }
                         },
-                      );
-
-                      if (result != null) {
-                        setState(() {
-                          task = result;
-                          print(task);
-                        });
-                      }
-                    },
-                    child: Center(
-                      child: const Text("Click to Add some tasks"),
-                    ),
-                  ),
-                )
-        ],
+                        child: Center(
+                          child: const Text("Click to Add some tasks"),
+                        ),
+                      ),
+                    )
+            ],
+          ),
+        ),
       ),
     );
   }

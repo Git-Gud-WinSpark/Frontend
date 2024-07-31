@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'dart:io' as io;
 
@@ -48,8 +50,11 @@ class CommunityIcon extends ConsumerWidget {
           }
         },
         child: CircleAvatar(
-          backgroundImage:
-              image == null || image!.isEmpty ? null : AssetImage(image!),
+          backgroundImage: image == null || image!.isEmpty
+              ? null
+              : MemoryImage(
+                  base64Decode(image!),
+                ),
           radius: 40,
           backgroundColor: Colors.grey,
           // backgroundImage: const AssetImage("assets/images/community.png"),

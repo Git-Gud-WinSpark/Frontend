@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 import 'package:frontend/services/completeTask.dart';
+import 'package:frontend/services/setSubtaskTime.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class TaskScreen extends ConsumerStatefulWidget {
@@ -37,7 +38,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
     final parts = timeSpent.split(':');
     final hours = int.parse(parts[0]);
     final minutes = int.parse(parts[1]);
-    final seconds = int.parse(parts[2]);
+    final seconds = double.parse(parts[2]).floor().toInt();
     return Duration(hours: hours, minutes: minutes, seconds: seconds);
   }
 
@@ -71,17 +72,29 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
 
   void onFinished() async {
     setState(() {
+      if (currentPercent < 1) {
+        setComplete();
+        currentPercent += (1 / widget.subTask.length);
+      }
       if (_currentIndex < widget.subTask.length - 1) {
         _currentIndex++;
         duration = _parseDuration(widget.subTask[_currentIndex]['timeSpent']);
         _controller.begin = duration!;
       }
-      setComplete();
     });
-    if (currentPercent < 1) {
-      currentPercent += (1 / widget.subTask.length);
-    }
     _controller.reset();
+  }
+
+  void setTime(String time) async {
+    var res = await setSubtaskTime(
+      token: widget.uId,
+      communityID: widget.coId,
+      channelID: widget.chId,
+      taskID: widget.liveID,
+      subID: widget.subTask[_currentIndex]["_id"],
+      time: time,
+    );
+    print(res);
   }
 
   @override
@@ -90,6 +103,11 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
     _controller.state.addListener(() {
       if (_controller.state.value == CustomTimerState.finished) {
         onFinished();
+      }
+      if (_controller.state.value == CustomTimerState.paused) {
+        print("object");
+        print(_controller.remaining.value.duration);
+        setTime(_controller.remaining.value.duration.toString());
       }
     });
     return Scaffold(

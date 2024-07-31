@@ -7,6 +7,6 @@ dynamic postRequest(dynamic params, Uri url) async {
     "Accept": "application/json",
   });
   print(response.body);
-  var jsonResponse = jsonDecode(response.body);
+  var jsonResponse = json.decode(response.body);
   return jsonResponse;
 }

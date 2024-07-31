@@ -17,8 +17,33 @@ class UserImagePicker extends StatefulWidget {
 class _UserImagePickerState extends State<UserImagePicker> {
   File? _pickedImageFile;
   void pickImage() async {
+    bool isCamera = await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: Text("Camera"),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: Text("gallery "),
+            ),
+          ],
+        ),
+      ),
+    );
     final pickedImage = await ImagePicker().pickImage(
-      source: ImageSource.camera,
+      source: isCamera ? ImageSource.camera : ImageSource.gallery,
       imageQuality: 50,
       maxWidth: 150,
     );

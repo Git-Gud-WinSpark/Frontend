@@ -3,14 +3,14 @@ import 'package:frontend/models/channel.dart';
 class Community {
   final String? id;
   final String name;
-  // final String? imageUrl;
+  final String? imageUrl;
   final List<String>? tags;
   final List<Channel>? channels;
 
   const Community({
     this.id,
     required this.name,
-    // this.imageUrl,
+    this.imageUrl,
     this.channels,
     this.tags,
   });
@@ -21,7 +21,7 @@ class Community {
     return Community(
       id: json['_id'],
       name: json['communityName'],
-      // imageUrl: json['image'],
+      imageUrl: json['profilePicture'],
       tags: json['tag'] != null
           ? (json['tag'] as List).map((i) => i.toString()).toList()
           : [],

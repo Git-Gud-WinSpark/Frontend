@@ -45,6 +45,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         try {
           final userCredential =
               await loginUser(email: _enteredEmail, password: _enteredPassword);
+          if (userCredential["status"] == "Failed") {
+            throw Exception(userCredential["message"]);
+          }
           print(userCredential['preferences']);
           ref.watch(tokenProvider.notifier).update(userCredential['token']);
           ref
@@ -52,25 +55,22 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               .update(userCredential['preferences']);
 
           // This needs to be replaced.
-          final storeAllComm = await listCommunities();
-          // print(storeAllComm["ListofAllCommunities"]);
-          ref
-              .watch(allCommunityListProvider.notifier)
-              .storeCommunities(storeAllComm["ListofAllCommunities"]);
+
           final getComm = await getCommunities(token: userCredential['token']);
+          if (getComm["status"] == "Failed") {
+            throw Exception(getComm["message"]);
+          }
           print(getComm);
           final communities = getComm['CommunitiesJoinedByUser'];
           ref
               .watch(communityListProvider.notifier)
               .storeCommunities(communities);
 
-
-
           print("Done");
           Navigator.of(context).pop();
 
           ref.watch(loginProvider.notifier).login();
-        } catch (e) {
+        } on Exception catch (e) {
           showDialog(
               context: context,
               builder: (context) => AlertDialog(
@@ -98,6 +98,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             email: _enteredEmail,
             password: _enteredPassword,
           );
+          if (userCredential["status"] == "Failed") {
+            throw Exception(userCredential["message"]);
+          }
           ref.watch(tokenProvider.notifier).update(userCredential['token']);
           ref.watch(preferenceProvider.notifier).update([]);
           print("Here");
@@ -106,7 +109,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           setState(() {
             _isAuthenticating = false;
           });
-        } catch (error) {
+        } on Exception catch (error) {
           showDialog(
               context: context,
               builder: (context) => AlertDialog(

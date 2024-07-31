@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/dummydata/images.dart';
 import 'package:frontend/dummydata/skills.dart';
 import 'package:frontend/models/channel.dart';
 import 'package:frontend/models/community.dart';
@@ -11,11 +15,13 @@ import 'package:frontend/services/createChannel.dart';
 import 'package:frontend/services/createCommunity.dart';
 import 'package:frontend/services/getChats.dart';
 import 'package:frontend/services/getPrivateChats.dart';
+import 'package:frontend/services/listCommunities.dart';
 import 'package:frontend/widgets/addUserDialog.dart';
 import 'package:frontend/widgets/community_cards.dart';
 import 'package:frontend/widgets/community_icon.dart';
 import 'package:frontend/widgets/createChannelDialog.dart';
 import 'package:frontend/widgets/skills.dart';
+import 'package:frontend/widgets/user_image_picker.dart';
 
 class LeftDrawer extends ConsumerStatefulWidget {
   const LeftDrawer({super.key, required this.channelSelected});
@@ -55,6 +61,7 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                             id: "1234",
                             name: 'Private Chats',
                             channels: [],
+                            image: privateChatsIcon,
                           ),
                         ]),
                       ),
@@ -70,6 +77,7 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                               id: communities[index].id!,
                               name: communities[index].name,
                               channels: communities[index].channels,
+                              image: communities[index].imageUrl,
                             );
                           },
                           itemCount: communities.length,
@@ -257,6 +265,7 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                       List<String> tags = [];
                       TextEditingController nameController =
                           TextEditingController();
+                      File? _selectedImage = null;
                       showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
@@ -264,10 +273,27 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                 content: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    TextField(
-                                      controller: nameController,
-                                      decoration: InputDecoration(
-                                        hintText: "Community Name",
+                                    Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.9,
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: UserImagePicker(
+                                              onPickImage: (pickedImage) {
+                                                _selectedImage = pickedImage;
+                                              },
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: TextField(
+                                              controller: nameController,
+                                              decoration: InputDecoration(
+                                                hintText: "Community Name",
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                     const SizedBox(
@@ -327,21 +353,31 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                     onPressed: () async {
                                       print(nameController.text);
                                       print(userID);
+                                      String? base64Image;
+                                      if (_selectedImage != null) {
+                                        List<int> imageBytes =
+                                            await _selectedImage!
+                                                .readAsBytesSync();
+                                        print(imageBytes);
+                                        base64Image = base64Encode(imageBytes);
+                                        print(base64Image);
+                                      }
                                       var res = await createCommunity(
                                         token: userID,
                                         communityName: nameController.text,
                                         tags: tags,
+                                        profilePic: base64Image,
                                       );
+                                      print(res);
                                       if (res['status'] == 'Success') {
                                         Navigator.of(context).pop();
                                         ref
                                             .watch(
                                                 communityListProvider.notifier)
                                             .addCommunity(Community(
-                                              id: res[
-                                                  "communityID"], //change karna hai baad me
+                                              id: res["communityID"],
                                               name: nameController.text,
-                                              // imageUrl: "",
+                                              imageUrl: base64Image,
                                               channels: [],
                                             ));
                                       }
@@ -359,9 +395,15 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       List<Community> communityList =
                           ref.read(allCommunityListProvider);
+                      final storeAllComm = await listCommunities();
+                      // print(storeAllComm["ListofAllCommunities"]);
+                      ref
+                          .watch(allCommunityListProvider.notifier)
+                          .storeCommunities(
+                              storeAllComm["ListofAllCommunities"]);
                       showDialog(
                           context: context,
                           builder: (context) {
@@ -386,9 +428,10 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                           // return Text(
                                           // communityList[index].name);
                                           return CommunityCard(
-                                              id: communityList[index].id,
-                                              name: communityList[index].name,
-                                              tags: communityList[index].tags);
+                                            id: communityList[index].id,
+                                            name: communityList[index].name,
+                                            tags: communityList[index].tags,
+                                          );
                                         },
                                         itemCount: communityList.length,
                                       ),

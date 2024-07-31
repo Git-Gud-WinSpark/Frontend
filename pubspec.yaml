@@ -56,6 +56,7 @@ dependencies:
   flutter_timer_countdown: ^1.0.7
   date_field: ^5.2.1
   custom_timer: ^0.2.3
+  calendar_view: ^1.2.0
 
 dev_dependencies:
   flutter_test:
