@@ -1,11 +1,17 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/common.dart';
+import 'package:frontend/provider/community_provider.dart';
+import 'package:frontend/provider/token_provider.dart';
 import 'package:frontend/screens/left_drawer.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:frontend/screens/right_drawer.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'package:mime/mime.dart';
@@ -15,34 +21,55 @@ import 'package:open_filex/open_filex.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 
-class ChatScreen extends StatefulWidget {
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+
+class ChatScreen extends ConsumerStatefulWidget {
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  ConsumerState<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenState extends ConsumerState<ChatScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   List<types.Message> _messages = [];
   String title = "Channel Name";
-  final _user = const types.User(
-    id: '82091008-a484-4a89-ae75-a22bf8d6f3ac',
-  );
-  void _drawerData(String data) {
-    print(data);
+  String id = "";
+  String? commId;
+  String? userID;
+  var _user;
+  bool _gotData = false;
+  var mode = "p2c";
+  void _drawerData(dynamic data) {
+    print("Inside drawer: $data");
     setState(() {
-      title = data;
-    });
-  }
-
-  void _loadMessages() async {
-    final response = await rootBundle.loadString('assets/messages.json');
-    final messages = (jsonDecode(response) as List)
-        .map((e) => types.Message.fromJson(e as Map<String, dynamic>))
-        .toList();
-
-    setState(() {
+      title = data['name'];
+      id = data['id'];
+      _gotData = true;
+      mode = data['mode'];
+      var messages = (data["messages"] as List).map((e) {
+        return types.TextMessage(
+          id: e['_id'],
+          author: types.User(id: e['senderID']),
+          createdAt: DateTime.parse(e['timestamp']).millisecondsSinceEpoch,
+          text: e['message'] ?? "",
+        );
+      }).toList();
+      messages.sort(
+        (a, b) => b.createdAt!.compareTo(a.createdAt!),
+      );
       _messages = messages;
     });
   }
+
+  // void _loadMessages() async {
+  //   final response = await rootBundle.loadString('assets/messages.json');
+  //   final messages = (jsonDecode(response) as List)
+  //       .map((e) => types.Message.fromJson(e as Map<String, dynamic>))
+  //       .toList();
+
+  //   setState(() {
+  //     _messages = messages;
+  //   });
+  // }
 
   void _addMessage(types.Message message) {
     setState(() {
@@ -198,7 +225,20 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  void _handleSendPressed(types.PartialText message) {
+  void _handleSendPressed(
+      types.PartialText message, String? comm_id, String channel_id) {
+    if (mode == "p2c") {
+      socket!.emit('messagep2c', {
+        'msg': message.text,
+        'id': _user.id,
+        'comm_id': comm_id,
+        'channel_id': channel_id
+      });
+    } else if (mode == "p2p") {
+      print("Inside p2p");
+      socket!.emit('messagep2p',
+          {'msg': message.text, 'id': _user.id, 'targetID': channel_id});
+    }
     final textMessage = types.TextMessage(
       author: _user,
       createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -211,38 +251,97 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void initState() {
+    userID = ref.read(tokenProvider);
+    _user = types.User(
+      id: userID!,
+    );
+    commId = ref.read(communityProvider).id;
+    initSocket();
     super.initState();
-    _loadMessages();
+    openDrawer();
+    // _loadMessages();
+  }
+
+  openDrawer() async {
+    await Future.delayed(Duration.zero);
+    _scaffoldKey.currentState!.openDrawer();
+  }
+
+  IO.Socket? socket;
+
+  initSocket() {
+    socket = IO.io(urlSocket, <String, dynamic>{
+      'autoConnect': false,
+      'transports': ['websocket'],
+    });
+    socket!.connect();
+    socket!.onConnect((_) {
+      print('Connection established');
+    });
+    socket!.onDisconnect((_) => print('Connection Disconnection'));
+    socket!.onConnectError((err) => print(err));
+    socket!.onError((err) => print(err));
+    socket!.emit('signin', _user.id); //yahan pe userid dalna hai
+    socket!.on('messagep2c', (data) {
+      print("insideSOcket");
+      print(data);
+      print(data['message']);
+      setState(() {
+        if (data['comm_id'] == commId && data['channel_id'] == id) {
+          _addMessage(types.TextMessage(
+            author: types.User(id: data['id']),
+            createdAt: DateTime.now().millisecondsSinceEpoch,
+            id: const Uuid().v4(),
+            text: data['message'],
+          ));
+        }
+      });
+    });
+    socket!.on('messagep2p', (data) {
+      print("insideSOcket p2p");
+      print(data);
+      setState(() {
+        _addMessage(types.TextMessage(
+          author: types.User(id: data["targetID"]),
+          createdAt: DateTime.now().millisecondsSinceEpoch,
+          id: const Uuid().v4(),
+          text: data["msg"],
+        ));
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(
-        width: double.infinity,
-        child: LeftDrawer(channelSelected: _drawerData),
+      key: _scaffoldKey,
+      drawerEnableOpenDragGesture: _gotData,
+      drawer: GestureDetector(
+          onHorizontalDragUpdate: (_) {
+            if (_gotData) {
+              _scaffoldKey.currentState!.closeDrawer();
+            }
+          },
+          child: Container(
+            width: double.infinity,
+            color: Colors.transparent,
+            child: Drawer(
+              width: double.infinity,
+              child: LeftDrawer(channelSelected: _drawerData),
+            ), //drawer
+          )),
+      endDrawer: Drawer(
+        child: RightDrawer(chId: id, coId: commId!, uId: userID!),
       ),
-      endDrawer: Drawer(),
-      drawerEnableOpenDragGesture: true,
       appBar: AppBar(
         title: Text(title),
-        // leading: IconButton(
-        //   icon: Icon(Icons.arrow_back),
-        //   onPressed: () async {
-        //     final result = await Navigator.of(context).push(MaterialPageRoute(
-        //       builder: (context) => LeftDrawer(),
-        //       fullscreenDialog: true,
-        //     ));
-        //     print('Drawer closed with: $result');
-        //   },
-        // ),
       ),
       body: Chat(
         messages: _messages,
         onAttachmentPressed: _handleAttachmentPressed,
         onMessageTap: _handleMessageTap,
         onPreviewDataFetched: _handlePreviewDataFetched,
-        onSendPressed: _handleSendPressed,
+        onSendPressed: (partText) => _handleSendPressed(partText, commId, id),
         showUserAvatars: true,
         showUserNames: true,
         user: _user,

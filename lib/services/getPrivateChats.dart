@@ -5,12 +5,11 @@ import 'package:frontend/common.dart';
 
 import 'postRequest.dart';
 
-dynamic sendPreferences(
-    {required String userID, required List<String> preferences}) {
-  Uri url = Uri.parse("$urlStart/addPreference");
+dynamic getPrivateChats({required String userID, required String receiverID}) {
+  Uri url = Uri.parse("$urlStart/api/getP2PChats");
   Map<String, dynamic> params = {
     "token": userID,
-    "preferences": preferences,
+    "receiverID": receiverID,
   };
   var response = postRequest(jsonEncode(params), url);
 

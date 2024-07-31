@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/provider/login_provider.dart';
 import 'package:frontend/provider/preference_provider.dart';
@@ -6,9 +7,12 @@ import 'package:frontend/screens/chat_screen.dart';
 import 'package:frontend/screens/start_screen.dart';
 import 'package:frontend/screens/success.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const ProviderScope(child: MyApp()));
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
+  runApp(ProviderScope(child: new MyApp()));
 }
 
 class MyApp extends ConsumerWidget {

@@ -1,9 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/provider/all_communities_provider.dart';
+import 'package:frontend/provider/community_list_provider.dart';
 import 'package:frontend/provider/login_provider.dart';
 import 'package:frontend/provider/preference_provider.dart';
 import 'package:frontend/provider/token_provider.dart';
+import 'package:frontend/services/fetchChatPrivate.dart';
+import 'package:frontend/services/getCommunities.dart';
+import 'package:frontend/services/listCommunities.dart';
 import 'package:frontend/services/login.dart';
 import 'package:frontend/services/signup.dart';
 import 'package:frontend/widgets/user_image_picker.dart';
@@ -42,17 +47,44 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               await loginUser(email: _enteredEmail, password: _enteredPassword);
           print(userCredential['preferences']);
           ref.watch(tokenProvider.notifier).update(userCredential['token']);
-          ref.watch(preferenceProvider.notifier).update(userCredential['preferences']);
+          ref
+              .watch(preferenceProvider.notifier)
+              .update(userCredential['preferences']);
+
+          // This needs to be replaced.
+          final storeAllComm = await listCommunities();
+          // print(storeAllComm["ListofAllCommunities"]);
+          ref
+              .watch(allCommunityListProvider.notifier)
+              .storeCommunities(storeAllComm["ListofAllCommunities"]);
+          final getComm = await getCommunities(token: userCredential['token']);
+          print(getComm);
+          final communities = getComm['CommunitiesJoinedByUser'];
+          ref
+              .watch(communityListProvider.notifier)
+              .storeCommunities(communities);
+
+
+
           print("Done");
           Navigator.of(context).pop();
 
           ref.watch(loginProvider.notifier).login();
-          
         } catch (e) {
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('$e Authentication failed')),
-          );
+          showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                    title: const Text("Error"),
+                    content: Text(e.toString()),
+                    actions: [
+                      TextButton(
+                        child: const Text('OK'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  ));
 
           setState(() {
             _isAuthenticating = false;
@@ -66,7 +98,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             email: _enteredEmail,
             password: _enteredPassword,
           );
-          // ref.watch(tokenProvider.notifier).update(userCredential['token']);
+          ref.watch(tokenProvider.notifier).update(userCredential['token']);
+          ref.watch(preferenceProvider.notifier).update([]);
           print("Here");
           Navigator.of(context).pop();
           ref.watch(loginProvider.notifier).login();
@@ -74,10 +107,20 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             _isAuthenticating = false;
           });
         } catch (error) {
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(' $error Authentication failed')),
-          );
+          showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                    title: const Text("Error"),
+                    content: Text(error.toString()),
+                    actions: [
+                      TextButton(
+                        child: const Text('OK'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  ));
 
           setState(() {
             _isAuthenticating = false;
@@ -117,12 +160,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (!_isLogin)
-                          UserImagePicker(
-                            onPickImage: (pickedImage) {
-                              _selectedImage = pickedImage;
-                            },
-                          ),
+                        // if (!_isLogin)
+                        //   UserImagePicker(
+                        //     onPickImage: (pickedImage) {
+                        //       _selectedImage = pickedImage;
+                        //     },
+                        //   ),
                         TextFormField(
                           decoration: const InputDecoration(
                             labelText: 'Email Address',

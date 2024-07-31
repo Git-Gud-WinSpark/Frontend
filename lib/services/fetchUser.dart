@@ -5,15 +5,10 @@ import 'package:frontend/common.dart';
 
 import 'postRequest.dart';
 
-dynamic createCommunity(
-    {required String token,
-    required String communityName,
-    required List<String> tags}) async {
-  Uri url = Uri.parse("$urlStart/api/createCommunity");
+dynamic fetchUser({required String userId}) async {
+  Uri url = Uri.parse("$urlStart/api/fetchUser");
   Map<String, dynamic> params = {
-    "token": token,
-    "communityName": communityName,
-    "tags": tags,
+    "userID": userId,
   };
   var response = await postRequest(jsonEncode(params), url);
   return response;

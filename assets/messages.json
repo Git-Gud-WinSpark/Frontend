@@ -37,20 +37,6 @@
   },
   {
     "author": {
-      "firstName": "Matthew",
-      "id": "82091008-a484-4a89-ae75-a22bf8d6f3ac",
-      "lastName": "White"
-    },
-    "createdAt": 1655648400000,
-    "id": "6a1a4351-cf05-4d0c-9d0f-47ed378b6112",
-    "mimeType": "application/pdf",
-    "name": "city_guide-madrid.pdf",
-    "size": 10550000,
-    "status": "seen",
-    "type": "file"
-  },
-  {
-    "author": {
       "firstName": "John",
       "id": "4c2307ba-3d40-442f-b1ff-b271f63904ca",
       "lastName": "Doe"
