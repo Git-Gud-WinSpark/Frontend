@@ -175,7 +175,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                           validator: (value) {
                             if (value == null ||
                                 value.trim().isEmpty ||
-                                !value.contains('@')) {
+                                !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value)) {
                               return 'Please enter a valid email address';
                             }
 
