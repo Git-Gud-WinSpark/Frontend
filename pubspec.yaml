@@ -57,6 +57,9 @@ dependencies:
   date_field: ^5.2.1
   custom_timer: ^0.2.3
   calendar_view: ^1.2.0
+  flutter_gemini: ^2.0.4
+  flutter_markdown: ^0.7.3
+  lottie: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -84,6 +87,7 @@ flutter:
   assets:
     - assets/messages.json
     - assets/images/
+    - assets/lottie/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

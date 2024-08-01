@@ -1,6 +1,7 @@
 import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/provider/login_provider.dart';
 import 'package:frontend/provider/preference_provider.dart';
@@ -13,6 +14,10 @@ Future<void> main() async {
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
+  // Gemini.init(
+  //     apiKey: const String.fromEnvironment('apiKey'), enableDebugging: true);
+  Gemini.init(
+      apiKey: "AIzaSyCRLKnUUvE7TJKz6cwvyTpDQCLx9NBUuSM", enableDebugging: true);
   runApp(ProviderScope(child: new MyApp()));
 }
 

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
+import 'package:frontend/screens/gemini_chat.dart';
 import 'package:frontend/services/completeTask.dart';
 import 'package:frontend/services/setSubtaskTime.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
@@ -113,118 +114,137 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text('Task Screen'),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const SizedBox(
-            height: 20,
-          ),
-          const Text(
-            "Total Progress",
-            style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          LinearPercentIndicator(
-            alignment: MainAxisAlignment.center,
-            width: 300,
-            animation: true,
-            lineHeight: 20.0,
-            animationDuration: 2000,
-            percent: currentPercent,
-            // center: const Text("50.0% Completed"),
-            barRadius: Radius.circular(8),
-            progressColor: Colors.blue,
-          ),
-          Text(
-            "${currentPercent * 100}% Completed",
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          const Text(
-            "Checklist",
-            style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 10),
-            child: AnotherStepper(
-              activeIndex: _currentIndex,
-              stepperList: [
-                for (var index = 0; index < widget.subTask.length; index++)
-                  StepperData(
-                    // WHat i can do is make an interactive icon like start and pause and when the task finishes show tick mark and move to next one.
-                    title: StepperText(
-                      widget.subTask[index]["name"],
-                      textStyle: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-              ],
-              stepperDirection: Axis.vertical,
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          CustomTimer(
-            controller: _controller,
-            builder: (state, time) {
-              return Text(
-                "${time.hours}:${time.minutes}:${time.seconds}.${time.milliseconds}",
-                style: TextStyle(
-                  fontSize: 24.0,
-                  color: Colors.white,
-                ),
-              );
+        actions: [
+          IconButton(
+            icon: Icon(Icons.chat_bubble_outline),
+            onPressed: () {
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (ctx) => GeminiChat()));
             },
-          ),
-          SizedBox(height: 24.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              RoundedButton(
-                text: "Start",
-                color: Colors.green,
-                onPressed: () => _controller.start(),
-              ),
-              RoundedButton(
-                text: "Pause",
-                color: Colors.blue,
-                onPressed: () => _controller.pause(),
-              ),
-              RoundedButton(
-                text: "Reset",
-                color: Colors.red,
-                onPressed: () => _controller.reset(),
-              ),
-              RoundedButton(
-                text: "Finish",
-                color: Colors.red,
-                onPressed: () {
-                  onFinished();
-                },
-              ),
-            ],
           ),
         ],
       ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(
+              height: 20,
+            ),
+            const Text(
+              "Total Progress",
+              style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            LinearPercentIndicator(
+              alignment: MainAxisAlignment.center,
+              width: 300,
+              animation: true,
+              lineHeight: 20.0,
+              animationDuration: 2000,
+              percent: currentPercent,
+              // center: const Text("50.0% Completed"),
+              barRadius: Radius.circular(8),
+              progressColor: Colors.blue,
+            ),
+            Text(
+              "${currentPercent * 100}% Completed",
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            const Text(
+              "Checklist",
+              style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 10),
+              child: AnotherStepper(
+                activeIndex: _currentIndex,
+                stepperList: [
+                  for (var index = 0; index < widget.subTask.length; index++)
+                    StepperData(
+                      // WHat i can do is make an interactive icon like start and pause and when the task finishes show tick mark and move to next one.
+                      title: StepperText(
+                        widget.subTask[index]["name"],
+                        textStyle: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                ],
+                stepperDirection: Axis.vertical,
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            CustomTimer(
+              controller: _controller,
+              builder: (state, time) {
+                return Text(
+                  "${time.hours}:${time.minutes}:${time.seconds}.${time.milliseconds}",
+                  style: TextStyle(
+                    fontSize: 24.0,
+                    color: Colors.white,
+                  ),
+                );
+              },
+            ),
+            SizedBox(height: 24.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                RoundedButton(
+                  text: "Start",
+                  color: Colors.green,
+                  onPressed: () => _controller.start(),
+                ),
+                RoundedButton(
+                  text: "Pause",
+                  color: Colors.blue,
+                  onPressed: () => _controller.pause(),
+                ),
+                RoundedButton(
+                  text: "Reset",
+                  color: Colors.red,
+                  onPressed: () => _controller.reset(),
+                ),
+                RoundedButton(
+                  text: "Finish",
+                  color: Colors.red,
+                  onPressed: () {
+                    onFinished();
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     Navigator.of(context)
+      //         .push(MaterialPageRoute(builder: (ctx) => GeminiChat()));
+      //   },
+      //   heroTag: UniqueKey(),
+
+      // ),
     );
   }
 }
