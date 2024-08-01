@@ -32,14 +32,10 @@ class createChannelDialog extends StatelessWidget {
             child: Text("Cancel")),
         ElevatedButton(
             onPressed: () async {
-              print(channelNameController.text);
-
-              print("id: ${communityInfo.id}");
 
               var res = await createChannel(
                   communityID: communityInfo.id!,
                   channelName: channelNameController.text);
-              print(res);
               if (res["status"] == 'Success') {
                 Navigator.of(context).pop();
                 ref.watch(communityListProvider.notifier).addChannel(

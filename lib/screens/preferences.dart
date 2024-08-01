@@ -26,8 +26,6 @@ class _PreferencesState extends ConsumerState<Preferences> {
         }
       }
     });
-    // print("object");
-    // print(prefernces);
   }
 
   @override
@@ -64,14 +62,11 @@ class _PreferencesState extends ConsumerState<Preferences> {
           ),
           ElevatedButton(
             onPressed: () async {
-              print(ref.read(tokenProvider));
               dynamic res = await sendPreferences(
                 userID: ref.read(tokenProvider),
                 preferences: prefernces,
               );
               ref.watch(preferenceProvider.notifier).update(prefernces);
-              print("Done");
-              print(res);
             },
             child: Text("Submit"),
           )

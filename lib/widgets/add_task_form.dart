@@ -75,8 +75,6 @@ class _TaskFormState extends State<TaskForm> {
         communityID: widget.coId,
         channelID: widget.chId,
         tasks: tasks);
-    print(res);
-    print('Form Submitted: ${tasks}');
   }
 
   @override
@@ -185,7 +183,6 @@ class _TaskFormState extends State<TaskForm> {
                       TextButton(
                         onPressed: _cancelTask,
                         child: Text('Cancel Task'),
-                        // style: ElevatedButton.styleFrom(primary: Colors.red),
                       ),
                     ],
                   ),

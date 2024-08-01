@@ -50,14 +50,12 @@ class _CommunityCardState extends ConsumerState<CommunityCard> {
             ),
             ElevatedButton(
               onPressed: () async {
-                print(communityList);
                 //check if the community is present already
                 var community =
                     communityList.map((e) => e.id).contains(widget.id);
                 if (community == false && widget.id != null) {
                   var res = await addCommunity(
                       token: userId, communityId: widget.id!);
-                  print(res);
                   if (res['status'] == 'Success') {
                     ref.watch(communityListProvider.notifier).addCommunity(
                           Community(
@@ -70,7 +68,6 @@ class _CommunityCardState extends ConsumerState<CommunityCard> {
                           ),
                         ); //need to add channels once api returns it
                   }
-                  // print("Card accepted");
                 } else {
                   showDialog(
                     context: context,

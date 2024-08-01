@@ -1,7 +1,6 @@
 import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/models/tasks.dart';
 import 'package:frontend/screens/task_screen.dart';
 import 'package:frontend/services/getLiveTask.dart';
 import 'package:frontend/widgets/add_task_form.dart';
@@ -30,9 +29,7 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
       communityID: widget.coId,
       channelID: widget.chId,
     );
-    print(response);
     setState(() {
-      print((response["LiveTasks"] as List));
       if ((response["LiveTasks"] as List).isNotEmpty) {
         task = List<Map<String, dynamic>>.from(
             response["LiveTasks"][0]["liveTask"]);
@@ -46,7 +43,6 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
           completedTasks.add(count);
         });
       }
-      print(task);
     });
   }
 
@@ -59,23 +55,8 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
 
   @override
   Widget build(BuildContext context) {
-    return
-        // CalendarControllerProvider(
-        //   controller: EventController(),
-        // child: MaterialApp(
-        //   theme: ThemeData(
-        //     colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFFF8476)),
-        //     appBarTheme: AppBarTheme(
-        //       backgroundColor: Color.fromARGB(255, 9, 13, 86),
-        //       foregroundColor: Colors.white,
-        //     ),
-        //     useMaterial3: true,
-        //     scaffoldBackgroundColor: Color.fromARGB(255, 5, 7, 44),
-        //   ),
-        //   home:
-        Scaffold(
+    return Scaffold(
       appBar: AppBar(
-        //add icon for productivity
         leading: IconButton(
           icon: const Icon(Icons.trending_up),
           onPressed: () {
@@ -109,6 +90,7 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
                           style: TextStyle(
                             fontSize: 30,
                             fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
                         ),
                         Padding(
@@ -152,13 +134,15 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
                                             progressColor: Colors.blue,
                                           ),
                                         ]),
-                                    subtitle: const Text('Description'),
+                                    subtitle: Text(
+                                        '${index < completedTasks.length ? (completedTasks[index] * 100 / (task[index]["subtask"] as List).length).toStringAsFixed(2) : '0.00'}% complete'),
                                     trailing: IconButton(
                                       icon: const Icon(Icons.arrow_forward),
-                                      onPressed: () {
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder: (context) {
+                                      onPressed: () async {
+                                        var currentIndex =
+                                            await Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) {
                                           return TaskScreen(
                                             subTask: task[index]["subtask"],
                                             done: index < completedTasks.length
@@ -170,6 +154,9 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
                                             liveID: task[index]["_id"],
                                           );
                                         }));
+                                        setState(() {
+                                          completedTasks[index] = currentIndex;
+                                        });
                                       },
                                     ),
                                   ),
@@ -198,12 +185,9 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
                           );
                         },
                       );
-                      print("aob");
-                      print(result);
                       if (result != null) {
                         setState(() {
                           task = result;
-                          print(task);
                         });
                       }
                     },

@@ -60,6 +60,8 @@ dependencies:
   flutter_gemini: ^2.0.4
   flutter_markdown: ^0.7.3
   lottie: ^3.0.0
+  get_ip_address: ^0.0.5
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_test:
@@ -88,6 +90,7 @@ flutter:
     - assets/messages.json
     - assets/images/
     - assets/lottie/
+    - .env
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

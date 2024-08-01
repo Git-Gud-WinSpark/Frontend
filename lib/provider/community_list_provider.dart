@@ -7,7 +7,6 @@ class CommunityListNotifier extends StateNotifier<List<Community>> {
   void storeCommunities(List<dynamic> communities) {
     List<Community> communityList = [];
     for (int i = 0; i < communities.length; i++) {
-      print(communities[i]);
       communityList.add(Community.fromJson(communities[i]));
     }
     state = communityList;

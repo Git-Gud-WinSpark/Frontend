@@ -22,6 +22,22 @@ import 'package:frontend/widgets/community_icon.dart';
 import 'package:frontend/widgets/createChannelDialog.dart';
 import 'package:frontend/widgets/skills.dart';
 import 'package:frontend/widgets/user_image_picker.dart';
+import 'dart:math';
+
+final List<IconData> icons = [
+  Icons.adjust_sharp,
+  Icons.star,
+  Icons.ac_unit_sharp,
+  Icons.accessibility_rounded,
+  Icons.adb_outlined,
+];
+Icon getRandomIcon() {
+  final random = Random();
+  return Icon(
+    icons[random.nextInt(icons.length)],
+    color: Colors.white,
+  );
+}
 
 class LeftDrawer extends ConsumerStatefulWidget {
   const LeftDrawer({super.key, required this.channelSelected});
@@ -114,11 +130,10 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                         child: Container(
                                           // color: Colors.green,
                                           margin: EdgeInsets.symmetric(
-                                              horizontal: 10, vertical: 15),
+                                              horizontal: 10, vertical: 12),
 
                                           child: ElevatedButton(
                                             onPressed: () {
-                                              print(communityInfo.channels);
                                               TextEditingController
                                                   channelNameController =
                                                   TextEditingController();
@@ -197,7 +212,6 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                                       channelId: communityInfo
                                                           .channels![index]
                                                           .id!);
-                                                  print(res);
                                                   widget.channelSelected({
                                                     'name': communityInfo
                                                         .channels![index].name,
@@ -215,7 +229,6 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                                                   .channels![
                                                                       index]
                                                                   .id!);
-                                                  print(res);
                                                   widget.channelSelected({
                                                     'name': communityInfo
                                                         .channels![index].name,
@@ -227,14 +240,44 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                                 }
                                               },
                                               child: Container(
-                                                margin:
-                                                    EdgeInsets.only(bottom: 5),
-                                                child: Text(
-                                                  communityInfo
-                                                      .channels![index].name,
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 20),
+                                                margin: EdgeInsets.only(
+                                                    bottom: 8,
+                                                    left: 8,
+                                                    right: 16),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                          bottomLeft:
+                                                              Radius.circular(
+                                                                  12),
+                                                          bottomRight:
+                                                              Radius.circular(
+                                                                  12)),
+                                                  border: Border(
+                                                    bottom: BorderSide(
+                                                      color: Colors.white
+                                                          .withOpacity(0.2),
+                                                      style: BorderStyle.solid,
+                                                      width: 2,
+                                                    ),
+                                                  ),
+                                                  shape: BoxShape.rectangle,
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    getRandomIcon(),
+                                                    SizedBox(
+                                                      width: 8,
+                                                    ),
+                                                    Text(
+                                                      communityInfo
+                                                          .channels![index]
+                                                          .name,
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 20),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
                                             );
@@ -261,7 +304,7 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Container(
-                    margin: EdgeInsets.all(8),
+                    margin: EdgeInsets.all(4),
                     child: ElevatedButton(
                       onPressed: () {
                         List<String> tags = [];
@@ -354,17 +397,13 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                     ),
                                     TextButton(
                                       onPressed: () async {
-                                        print(nameController.text);
-                                        print(userID);
                                         String? base64Image;
                                         if (_selectedImage != null) {
                                           List<int> imageBytes =
                                               await _selectedImage!
                                                   .readAsBytesSync();
-                                          print(imageBytes);
                                           base64Image =
                                               base64Encode(imageBytes);
-                                          print(base64Image);
                                         }
                                         var res = await createCommunity(
                                           token: userID,
@@ -372,7 +411,6 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                           tags: tags,
                                           profilePic: base64Image,
                                         );
-                                        print(res);
                                         if (res['status'] == 'Success') {
                                           Navigator.of(context).pop();
                                           ref
@@ -403,13 +441,13 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                     ),
                   ),
                   Container(
-                    margin: EdgeInsets.all(8),
+                    margin: EdgeInsets.all(4),
                     child: ElevatedButton(
                       onPressed: () async {
                         List<Community> communityList =
                             ref.read(allCommunityListProvider);
+
                         final storeAllComm = await listCommunities();
-                        // print(storeAllComm["ListofAllCommunities"]);
                         ref
                             .watch(allCommunityListProvider.notifier)
                             .storeCommunities(
@@ -432,7 +470,7 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                         ),
                                       ),
                                       SizedBox(height: 10),
-                                      Text("Communities..."),
+                                      // Text("Communities..."),
                                       Expanded(
                                         child: ListView.builder(
                                           itemBuilder: (context, index) {

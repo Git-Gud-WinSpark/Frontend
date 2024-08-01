@@ -16,8 +16,6 @@ class Community {
   });
 
   factory Community.fromJson(Map<String, dynamic> json) {
-    print("Here");
-    print(json);
     return Community(
       id: json['_id'],
       name: json['communityName'],

@@ -68,7 +68,6 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
         channelID: widget.chId,
         taskID: widget.liveID,
         subID: widget.subTask[_currentIndex]["_id"]);
-    print(res);
   }
 
   void onFinished() async {
@@ -95,25 +94,26 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
       subID: widget.subTask[_currentIndex]["_id"],
       time: time,
     );
-    print(res);
   }
 
   @override
   Widget build(BuildContext context) {
-    // print("Reneder $_currentIndex $duration");
     _controller.state.addListener(() {
       if (_controller.state.value == CustomTimerState.finished) {
         onFinished();
       }
       if (_controller.state.value == CustomTimerState.paused) {
-        print("object");
-        print(_controller.remaining.value.duration);
         setTime(_controller.remaining.value.duration.toString());
       }
     });
     return Scaffold(
       appBar: AppBar(
         title: const Text('Task Screen'),
+        leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).pop(_currentIndex);
+            },
+            icon: const Icon(Icons.arrow_back)),
         actions: [
           IconButton(
             icon: Icon(Icons.chat_bubble_outline),
@@ -124,6 +124,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
           ),
         ],
       ),
+
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -154,7 +155,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
               progressColor: Colors.blue,
             ),
             Text(
-              "${currentPercent * 100}% Completed",
+              "${(currentPercent * 100).toStringAsFixed(2)}% Completed",
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,

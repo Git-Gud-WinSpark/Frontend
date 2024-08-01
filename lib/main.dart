@@ -8,6 +8,8 @@ import 'package:frontend/provider/preference_provider.dart';
 import 'package:frontend/screens/chat_screen.dart';
 import 'package:frontend/screens/start_screen.dart';
 import 'package:frontend/screens/success.dart';
+import 'package:get_ip_address/get_ip_address.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,8 +18,9 @@ Future<void> main() async {
   ]);
   // Gemini.init(
   //     apiKey: const String.fromEnvironment('apiKey'), enableDebugging: true);
+  await dotenv.load(fileName: ".env");
   Gemini.init(
-      apiKey: "AIzaSyCRLKnUUvE7TJKz6cwvyTpDQCLx9NBUuSM", enableDebugging: true);
+      apiKey: dotenv.env['GEMINI']!, enableDebugging: true);
   runApp(ProviderScope(child: new MyApp()));
 }
 
@@ -26,7 +29,6 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     bool preferenceSet = ref.watch(preferenceProvider).isNotEmpty;
-    print(preferenceSet);
     bool isLogin = ref.watch(loginProvider);
     return CalendarControllerProvider(
       controller: EventController(),

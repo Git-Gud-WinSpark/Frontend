@@ -41,26 +41,31 @@ class _GeminiChatState extends State<GeminiChat> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        // backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(_selectedItem == 0
-            ? 'Flutter Gemini'
-            : _sections[_selectedItem].title),
-        actions: [
-          PopupMenuButton<int>(
-            initialValue: _selectedItem,
-            onSelected: (value) => setState(() => _selectedItem = value),
-            itemBuilder: (context) => _sections.map((e) {
-              return PopupMenuItem<int>(value: e.index, child: Text(e.title));
-            }).toList(),
-            child: const Icon(Icons.more_vert_rounded),
-          )
-        ],
-      ),
-      body: IndexedStack(
-        index: _selectedItem,
-        children: _sections.map((e) => e.widget).toList(),
+    return MaterialApp(
+      theme: ThemeData(brightness: Brightness.dark),
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text(
+              _selectedItem == 0 ? 'Gemini' : _sections[_selectedItem].title),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          actions: [
+            PopupMenuButton<int>(
+              initialValue: _selectedItem,
+              onSelected: (value) => setState(() => _selectedItem = value),
+              itemBuilder: (context) => _sections.map((e) {
+                return PopupMenuItem<int>(value: e.index, child: Text(e.title));
+              }).toList(),
+              child: const Icon(Icons.more_vert_rounded),
+            ),
+          ],
+        ),
+        body: IndexedStack(
+          index: _selectedItem,
+          children: _sections.map((e) => e.widget).toList(),
+        ),
       ),
     );
   }
