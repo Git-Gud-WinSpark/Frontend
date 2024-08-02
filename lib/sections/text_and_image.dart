@@ -80,7 +80,6 @@ class _SectionTextAndImageInputState extends State<SectionTextAndImageInput> {
         ChatInputBox(
           controller: controller,
           onClickCamera: () async {
-            // Capture a photo.
             final XFile? photo =
                 await picker.pickImage(source: ImageSource.camera);
 

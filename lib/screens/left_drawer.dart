@@ -68,7 +68,6 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
-                  // flex: 2,
                   child: Column(children: [
                     Expanded(
                       child: Container(
@@ -90,7 +89,6 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                         child: ListView.builder(
                           itemBuilder: (context, index) {
                             return CommunityIcon(
-                              // image: communities[index].imageUrl,
                               id: communities[index].id!,
                               name: communities[index].name,
                               channels: communities[index].channels,
@@ -129,7 +127,6 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                     children: [
                                       Expanded(
                                         child: Container(
-                                          // color: Colors.green,
                                           margin: EdgeInsets.symmetric(
                                               horizontal: 10, vertical: 12),
 
@@ -478,7 +475,6 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                   child: Column(
                                     children: [
                                       SizedBox(height: 10),
-                                      // Text("Communities..."),
                                       Expanded(
                                         child: ListView.builder(
                                           itemBuilder: (context, index) {

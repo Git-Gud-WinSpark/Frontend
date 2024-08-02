@@ -270,7 +270,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     initSocket();
     super.initState();
     openDrawer();
-    // _loadMessages();
   }
 
   openDrawer() async {
@@ -292,7 +291,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     socket!.onDisconnect((_) => print('Connection Disconnection'));
     socket!.onConnectError((err) => print(err));
     socket!.onError((err) => print(err));
-    socket!.emit('signin', _user.id); //yahan pe userid dalna hai
+    socket!.emit('signin', _user.id);
     socket!.on('messagep2c', (data) {
       setState(() {
         if (data['comm_id'] == commId && data['channel_id'] == id) {

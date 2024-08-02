@@ -54,7 +54,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               .watch(preferenceProvider.notifier)
               .update(userCredential['preferences']);
 
-          // This needs to be replaced.
 
           final getComm = await getCommunities(token: userCredential['token']);
           if (getComm["status"] == "Failed") {
@@ -230,12 +229,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                               !_isLogin ? 'Sign up' : 'Login',
                             ),
                           ),
-                        // InkWell(
-                        //   onTap: () async {
-                        //     await signInWithGoogle();
-                        //   },
-                        //   child: Image.asset("assets/images/google.png"),
-                        // ),
                         if (!_isAuthenticating)
                           TextButton(
                             onPressed: () {

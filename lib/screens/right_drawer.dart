@@ -48,7 +48,6 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
 
   @override
   void initState() {
-    // TODO: implement initState
     fetchTasks();
     super.initState();
   }
@@ -206,8 +205,6 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
                 )
         ],
       ),
-      //   ),
-      // ),
     );
   }
 }

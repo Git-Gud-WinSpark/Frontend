@@ -55,7 +55,6 @@ class CommunityIcon extends ConsumerWidget {
                 ),
           radius: 40,
           backgroundColor: Colors.grey,
-          // backgroundImage: const AssetImage("assets/images/community.png"),
           foregroundColor: Colors.transparent,
         ),
       ),
