@@ -70,7 +70,7 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
           Expanded(
               child: Container(
             margin: EdgeInsets.all(16),
-            child: MonthView(
+            child: const MonthView(
               showBorder: true,
               cellAspectRatio: 0.5,
             ),
@@ -112,7 +112,9 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
                                       );
                                 });
                                 return Card(
+                                  color: Color(0xFF433D8B),
                                   child: ListTile(
+                                    textColor: Colors.white,
                                     title: Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.start,
@@ -137,7 +139,10 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
                                     subtitle: Text(
                                         '${index < completedTasks.length ? (completedTasks[index] * 100 / (task[index]["subtask"] as List).length).toStringAsFixed(2) : '0.00'}% complete'),
                                     trailing: IconButton(
-                                      icon: const Icon(Icons.arrow_forward),
+                                      icon: const Icon(
+                                        Icons.arrow_forward,
+                                        color: Colors.white,
+                                      ),
                                       onPressed: () async {
                                         var currentIndex =
                                             await Navigator.of(context).push(

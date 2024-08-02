@@ -335,11 +335,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             child: Drawer(
               width: double.infinity,
               child: LeftDrawer(channelSelected: _drawerData),
-            ), //drawer
+            ),
           )),
-      endDrawer: Drawer(
-        child: RightDrawer(chId: id, coId: commId!, uId: userID!),
-      ),
+      endDrawer: mode == "p2c"
+          ? Drawer(
+              child: RightDrawer(chId: id, coId: commId!, uId: userID!),
+            )
+          : null,
+      endDrawerEnableOpenDragGesture: mode == "p2c",
       appBar: AppBar(
         title: Text(title),
         leading: IconButton(

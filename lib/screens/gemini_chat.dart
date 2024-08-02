@@ -28,8 +28,8 @@ class _GeminiChatState extends State<GeminiChat> {
   int _selectedItem = 0;
 
   final _sections = <SectionItem>[
-    SectionItem(0, 'chat', const SectionChat()),
-    SectionItem(1, 'Stream text', const SectionTextStreamInput()),
+    SectionItem(0, 'Stream text', const SectionTextStreamInput()),
+    SectionItem(1, 'chat', const SectionChat()),
     SectionItem(2, 'textAndImage', const SectionTextAndImageInput()),
     SectionItem(3, 'Stream chat', const SectionStreamChat()),
     SectionItem(4, 'text', const SectionTextInput()),
