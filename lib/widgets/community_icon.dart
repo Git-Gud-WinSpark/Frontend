@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'dart:io' as io;
 
@@ -31,7 +33,6 @@ class CommunityIcon extends ConsumerWidget {
         onTap: () async {
           if (id == "1234") {
             String uID = ref.read(tokenProvider);
-            print(uID);
             var res = await fetchChatPrivate(userID: uID);
             if (res["status"] == "Success") {
               ref.watch(communityProvider.notifier).selectedCommunity(Community(
@@ -44,12 +45,14 @@ class CommunityIcon extends ConsumerWidget {
           } else {
             ref.watch(communityProvider.notifier).selectedCommunity(
                 Community(id: id, name: name, channels: channels));
-            print(name);
           }
         },
         child: CircleAvatar(
-          backgroundImage:
-              image == null || image!.isEmpty ? null : AssetImage(image!),
+          backgroundImage: image == null || image!.isEmpty
+              ? null
+              : MemoryImage(
+                  base64Decode(image!),
+                ),
           radius: 40,
           backgroundColor: Colors.grey,
           // backgroundImage: const AssetImage("assets/images/community.png"),

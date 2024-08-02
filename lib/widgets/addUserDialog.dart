@@ -88,10 +88,8 @@ class _AdduserdialogState extends State<Adduserdialog> {
             child: Text("Cancel")),
         ElevatedButton(
             onPressed: () async {
-              print(nameController.text);
 
               var res = await getUserFromUserName(name: nameController.text);
-              print(res);
               if (res["status"] == 'Success') {
                 setState(() {
                   users = res["UserDetails"];

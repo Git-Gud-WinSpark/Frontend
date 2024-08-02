@@ -6,10 +6,12 @@ import 'package:frontend/services/postRequest2.dart';
 
 import 'postRequest.dart';
 
-dynamic fetchChatPrivate({required String userID}) async {
-  Uri url = Uri.parse("$urlStart/api/listP2PConversations");
+dynamic getUserFromUserID({required String userID}) async{
 
-  Map<String, dynamic> params = {"token": userID};
+  Uri url = Uri.parse("$urlStart/api/fetchUser");
+  Map<String, dynamic> params = {
+    "userID" : userID,
+  };
   var response = await postRequest2(jsonEncode(params), url);
   return response;
 }

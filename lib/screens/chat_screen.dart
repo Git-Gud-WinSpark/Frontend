@@ -9,9 +9,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/common.dart';
 import 'package:frontend/provider/community_provider.dart';
 import 'package:frontend/provider/token_provider.dart';
+import 'package:frontend/provider/user_provider.dart';
 import 'package:frontend/screens/left_drawer.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:frontend/screens/right_drawer.dart';
+import 'package:frontend/services/getUserFromUserID.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'package:mime/mime.dart';
@@ -35,41 +37,49 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   String id = "";
   String? commId;
   String? userID;
+  String? name;
   var _user;
   bool _gotData = false;
   var mode = "p2c";
-  void _drawerData(dynamic data) {
-    print("Inside drawer: $data");
+
+  Future<String> fetchUserName(String uID) async {
+    var res = await getUserFromUserID(userID: uID);
+    if (res["status"] == "Success") {
+      if (res["UserDetails"] == null) {
+        return "Error";
+      }
+      return res["UserDetails"]["username"];
+    }
+    return "Error";
+  }
+
+  void _drawerData(dynamic data) async {
     setState(() {
       title = data['name'];
       id = data['id'];
       _gotData = true;
       mode = data['mode'];
-      var messages = (data["messages"] as List).map((e) {
-        return types.TextMessage(
-          id: e['_id'],
-          author: types.User(id: e['senderID']),
-          createdAt: DateTime.parse(e['timestamp']).millisecondsSinceEpoch,
-          text: e['message'] ?? "",
-        );
-      }).toList();
-      messages.sort(
-        (a, b) => b.createdAt!.compareTo(a.createdAt!),
+    });
+    var messages = await Future.wait((data["messages"] as List).map((e) async {
+      return types.TextMessage(
+        id: e['_id'],
+        author: types.User(
+          id: e['senderID'],
+          firstName: e['joinedData'] != null && e['joinedData'].isNotEmpty
+              ? e['joinedData'][0]['username']
+              : null,
+        ),
+        createdAt: DateTime.parse(e['timestamp']).millisecondsSinceEpoch,
+        text: e['message'] ?? "",
       );
+    }).toList());
+    messages.sort(
+      (a, b) => b.createdAt!.compareTo(a.createdAt!),
+    );
+    setState(() {
       _messages = messages;
     });
   }
-
-  // void _loadMessages() async {
-  //   final response = await rootBundle.loadString('assets/messages.json');
-  //   final messages = (jsonDecode(response) as List)
-  //       .map((e) => types.Message.fromJson(e as Map<String, dynamic>))
-  //       .toList();
-
-  //   setState(() {
-  //     _messages = messages;
-  //   });
-  // }
 
   void _addMessage(types.Message message) {
     setState(() {
@@ -232,10 +242,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         'msg': message.text,
         'id': _user.id,
         'comm_id': comm_id,
-        'channel_id': channel_id
+        'channel_id': channel_id,
+        'name': name
       });
     } else if (mode == "p2p") {
-      print("Inside p2p");
       socket!.emit('messagep2p',
           {'msg': message.text, 'id': _user.id, 'targetID': channel_id});
     }
@@ -252,6 +262,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   void initState() {
     userID = ref.read(tokenProvider);
+    name = ref.read(userProvider);
     _user = types.User(
       id: userID!,
     );
@@ -283,13 +294,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     socket!.onError((err) => print(err));
     socket!.emit('signin', _user.id); //yahan pe userid dalna hai
     socket!.on('messagep2c', (data) {
-      print("insideSOcket");
-      print(data);
-      print(data['message']);
       setState(() {
         if (data['comm_id'] == commId && data['channel_id'] == id) {
           _addMessage(types.TextMessage(
-            author: types.User(id: data['id']),
+            author: types.User(id: data['id'], firstName: data['name']),
             createdAt: DateTime.now().millisecondsSinceEpoch,
             id: const Uuid().v4(),
             text: data['message'],
@@ -298,7 +306,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       });
     });
     socket!.on('messagep2p', (data) {
-      print("insideSOcket p2p");
       print(data);
       setState(() {
         _addMessage(types.TextMessage(
@@ -335,8 +342,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ),
       appBar: AppBar(
         title: Text(title),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+        ),
       ),
       body: Chat(
+        theme: DarkChatTheme(),
         messages: _messages,
         onAttachmentPressed: _handleAttachmentPressed,
         onMessageTap: _handleMessageTap,

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 // import 'package:shared_preferences/shared_preferences.dart';
 import 'package:frontend/common.dart';
+import 'package:frontend/services/postRequest2.dart';
 
 import 'postRequest.dart';
 
@@ -11,8 +12,7 @@ dynamic loginUser({required String email, required String password}) async{
     "email": email,
     "password": password,
   };
-  var response = await postRequest(jsonEncode(params), url);
-  print(response);
+  var response = await postRequest2(jsonEncode(params), url);
   return response;
 }
 

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 // import 'package:shared_preferences/shared_preferences.dart';
 import 'package:frontend/common.dart';
+import 'package:frontend/services/postRequest2.dart';
 
 import 'postRequest.dart';
 
@@ -12,7 +13,7 @@ dynamic sendPreferences(
     "token": userID,
     "preferences": preferences,
   };
-  var response = postRequest(jsonEncode(params), url);
+  var response = postRequest2(jsonEncode(params), url);
 
   return response;
 }

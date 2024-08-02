@@ -5,11 +5,8 @@ import 'package:frontend/models/community.dart';
 class AllCommunityListNotifier extends StateNotifier<List<Community>> {
   AllCommunityListNotifier() : super([]);
   void storeCommunities(List<dynamic> communities) {
-    print("store communities called");
-    print(communities);
     List<Community> communityList = [];
     for (int i = 0; i < communities.length; i++) {
-      print(communities[i]);
       communityList.add(Community.fromJson(communities[i]));
     }
     state = communityList;

@@ -6,6 +6,7 @@ import 'package:frontend/provider/community_list_provider.dart';
 import 'package:frontend/provider/login_provider.dart';
 import 'package:frontend/provider/preference_provider.dart';
 import 'package:frontend/provider/token_provider.dart';
+import 'package:frontend/provider/user_provider.dart';
 import 'package:frontend/services/fetchChatPrivate.dart';
 import 'package:frontend/services/getCommunities.dart';
 import 'package:frontend/services/listCommunities.dart';
@@ -34,7 +35,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
   void _submit() async {
     final isValid = _form.currentState!.validate();
-    print("yo");
 
     if (isValid) {
       _form.currentState!.save();
@@ -45,32 +45,29 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         try {
           final userCredential =
               await loginUser(email: _enteredEmail, password: _enteredPassword);
-          print(userCredential['preferences']);
+          if (userCredential["status"] == "Failed") {
+            throw Exception(userCredential["message"]);
+          }
           ref.watch(tokenProvider.notifier).update(userCredential['token']);
+          ref.watch(userProvider.notifier).update(userCredential['username']);
           ref
               .watch(preferenceProvider.notifier)
               .update(userCredential['preferences']);
 
           // This needs to be replaced.
-          final storeAllComm = await listCommunities();
-          // print(storeAllComm["ListofAllCommunities"]);
-          ref
-              .watch(allCommunityListProvider.notifier)
-              .storeCommunities(storeAllComm["ListofAllCommunities"]);
+
           final getComm = await getCommunities(token: userCredential['token']);
-          print(getComm);
+          if (getComm["status"] == "Failed") {
+            throw Exception(getComm["message"]);
+          }
           final communities = getComm['CommunitiesJoinedByUser'];
           ref
               .watch(communityListProvider.notifier)
               .storeCommunities(communities);
-
-
-
-          print("Done");
           Navigator.of(context).pop();
 
           ref.watch(loginProvider.notifier).login();
-        } catch (e) {
+        } on Exception catch (e) {
           showDialog(
               context: context,
               builder: (context) => AlertDialog(
@@ -92,21 +89,23 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         }
       } else {
         try {
-          print("Start");
           final userCredential = await registerUser(
             name: _enteredUsername,
             email: _enteredEmail,
             password: _enteredPassword,
           );
+          if (userCredential["status"] == "Failed") {
+            throw Exception(userCredential["message"]);
+          }
           ref.watch(tokenProvider.notifier).update(userCredential['token']);
+          ref.watch(userProvider.notifier).update(_enteredUsername);
           ref.watch(preferenceProvider.notifier).update([]);
-          print("Here");
           Navigator.of(context).pop();
           ref.watch(loginProvider.notifier).login();
           setState(() {
             _isAuthenticating = false;
           });
-        } catch (error) {
+        } on Exception catch (error) {
           showDialog(
               context: context,
               builder: (context) => AlertDialog(
@@ -148,7 +147,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(height: 20),
-            Text("Welcome to Git Gud",
+            Text("Welcome to STUD - COM",
                 style: Theme.of(context).textTheme.headlineSmall),
             Card(
               margin: const EdgeInsets.all(20),

@@ -1,5 +1,9 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:frontend/dummydata/images.dart';
 import 'package:frontend/dummydata/skills.dart';
 import 'package:frontend/models/channel.dart';
 import 'package:frontend/models/community.dart';
@@ -11,11 +15,29 @@ import 'package:frontend/services/createChannel.dart';
 import 'package:frontend/services/createCommunity.dart';
 import 'package:frontend/services/getChats.dart';
 import 'package:frontend/services/getPrivateChats.dart';
+import 'package:frontend/services/listCommunities.dart';
 import 'package:frontend/widgets/addUserDialog.dart';
 import 'package:frontend/widgets/community_cards.dart';
 import 'package:frontend/widgets/community_icon.dart';
 import 'package:frontend/widgets/createChannelDialog.dart';
 import 'package:frontend/widgets/skills.dart';
+import 'package:frontend/widgets/user_image_picker.dart';
+import 'dart:math';
+
+final List<IconData> icons = [
+  Icons.adjust_sharp,
+  Icons.star,
+  Icons.ac_unit_sharp,
+  Icons.accessibility_rounded,
+  Icons.adb_outlined,
+];
+Icon getRandomIcon() {
+  final random = Random();
+  return Icon(
+    icons[random.nextInt(icons.length)],
+    color: Colors.white,
+  );
+}
 
 class LeftDrawer extends ConsumerStatefulWidget {
   const LeftDrawer({super.key, required this.channelSelected});
@@ -49,12 +71,13 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                   child: Column(children: [
                     Expanded(
                       child: Container(
-                        color: Color.fromARGB(255, 47, 47, 47),
+                        color: Color.fromARGB(255, 22, 24, 33),
                         child: Stack(children: [
                           CommunityIcon(
                             id: "1234",
                             name: 'Private Chats',
                             channels: [],
+                            image: privateChatsIcon,
                           ),
                         ]),
                       ),
@@ -62,7 +85,7 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                     Expanded(
                       flex: 6,
                       child: Container(
-                        color: Color.fromARGB(255, 57, 57, 57),
+                        color: Color.fromARGB(255, 28, 25, 47),
                         child: ListView.builder(
                           itemBuilder: (context, index) {
                             return CommunityIcon(
@@ -70,6 +93,7 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                               id: communities[index].id!,
                               name: communities[index].name,
                               channels: communities[index].channels,
+                              image: communities[index].imageUrl,
                             );
                           },
                           itemCount: communities.length,
@@ -84,7 +108,7 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                       children: [
                         Expanded(
                           child: Container(
-                            color: const Color.fromARGB(255, 35, 35, 35),
+                            color: Color.fromARGB(255, 21, 23, 47),
                             width: double.infinity,
                             alignment: Alignment.topCenter,
                             padding: EdgeInsets.all(10),
@@ -106,11 +130,10 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                         child: Container(
                                           // color: Colors.green,
                                           margin: EdgeInsets.symmetric(
-                                              horizontal: 10, vertical: 10),
+                                              horizontal: 10, vertical: 12),
 
                                           child: ElevatedButton(
                                             onPressed: () {
-                                              print(communityInfo.channels);
                                               TextEditingController
                                                   channelNameController =
                                                   TextEditingController();
@@ -139,8 +162,8 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                                 Text(
                                                   communityInfo.name !=
                                                           "Private Chats"
-                                                      ? "Create Channel"
-                                                      : "Add Friend",
+                                                      ? "+ Create Channel"
+                                                      : "+ Add Friend",
                                                   style:
                                                       TextStyle(fontSize: 16),
                                                 ),
@@ -159,7 +182,7 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                         Expanded(
                           flex: 5,
                           child: Container(
-                            color: const Color.fromARGB(255, 94, 94, 94),
+                            color: Color.fromARGB(255, 28, 25, 56),
                             width: double.infinity,
                             child: Column(
                               children: [
@@ -189,7 +212,6 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                                       channelId: communityInfo
                                                           .channels![index]
                                                           .id!);
-                                                  print(res);
                                                   widget.channelSelected({
                                                     'name': communityInfo
                                                         .channels![index].name,
@@ -207,7 +229,6 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                                                   .channels![
                                                                       index]
                                                                   .id!);
-                                                  print(res);
                                                   widget.channelSelected({
                                                     'name': communityInfo
                                                         .channels![index].name,
@@ -219,14 +240,44 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                                 }
                                               },
                                               child: Container(
-                                                margin:
-                                                    EdgeInsets.only(bottom: 5),
-                                                child: Text(
-                                                  communityInfo
-                                                      .channels![index].name,
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 20),
+                                                margin: EdgeInsets.only(
+                                                    bottom: 8,
+                                                    left: 8,
+                                                    right: 16),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                          bottomLeft:
+                                                              Radius.circular(
+                                                                  12),
+                                                          bottomRight:
+                                                              Radius.circular(
+                                                                  12)),
+                                                  border: Border(
+                                                    bottom: BorderSide(
+                                                      color: Colors.white
+                                                          .withOpacity(0.2),
+                                                      style: BorderStyle.solid,
+                                                      width: 2,
+                                                    ),
+                                                  ),
+                                                  shape: BoxShape.rectangle,
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    getRandomIcon(),
+                                                    SizedBox(
+                                                      width: 8,
+                                                    ),
+                                                    Text(
+                                                      communityInfo
+                                                          .channels![index]
+                                                          .name,
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 20),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
                                             );
@@ -247,74 +298,195 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
           ),
           Expanded(
             child: Container(
-              color: Color.fromARGB(255, 25, 25, 25),
+              color: Color.fromARGB(255, 22, 19, 40),
               width: double.infinity,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      List<String> tags = [];
-                      TextEditingController nameController =
-                          TextEditingController();
-                      showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                                title: Text("Create Community"),
-                                content: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    TextField(
-                                      controller: nameController,
-                                      decoration: InputDecoration(
-                                        hintText: "Community Name",
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    Row(children: [
-                                      Text("Select Tags: "),
-                                      Expanded(
-                                        child: Container(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.9,
-                                          height: 50,
-                                          child: ListView.builder(
-                                            scrollDirection: Axis.horizontal,
-                                            shrinkWrap: true,
-                                            itemBuilder: (context, index) {
-                                              void _togglePreference(
-                                                  String preference,
-                                                  bool value) {
-                                                setState(() {
-                                                  if (!value) {
-                                                    if (tags
-                                                        .contains(preference)) {
-                                                      tags.remove(preference);
-                                                    }
-                                                  } else {
-                                                    if (!tags
-                                                        .contains(preference)) {
-                                                      tags.add(preference);
-                                                    }
-                                                  }
-                                                });
-                                              }
-
-                                              return ToggleSkills(
-                                                text: skills[index],
-                                                onToggle: _togglePreference,
-                                              );
-                                            },
-                                            itemCount: skills.length,
-                                          ),
+                  Container(
+                    margin: EdgeInsets.all(4),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        List<String> tags = [];
+                        TextEditingController nameController =
+                            TextEditingController();
+                        File? _selectedImage = null;
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                                  title: Text("Create Community"),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.9,
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              child: UserImagePicker(
+                                                onPickImage: (pickedImage) {
+                                                  _selectedImage = pickedImage;
+                                                },
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: TextField(
+                                                controller: nameController,
+                                                decoration: InputDecoration(
+                                                  hintText: "Community Name",
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      )
-                                    ]),
+                                      ),
+                                      const SizedBox(
+                                        height: 20,
+                                      ),
+                                      Row(children: [
+                                        Text("Select Tags: "),
+                                        Expanded(
+                                          child: Container(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.9,
+                                            height: 50,
+                                            child: ListView.builder(
+                                              scrollDirection: Axis.horizontal,
+                                              shrinkWrap: true,
+                                              itemBuilder: (context, index) {
+                                                void _togglePreference(
+                                                    String preference,
+                                                    bool value) {
+                                                  setState(() {
+                                                    if (!value) {
+                                                      if (tags.contains(
+                                                          preference)) {
+                                                        tags.remove(preference);
+                                                      }
+                                                    } else {
+                                                      if (!tags.contains(
+                                                          preference)) {
+                                                        tags.add(preference);
+                                                      }
+                                                    }
+                                                  });
+                                                }
+
+                                                return ToggleSkills(
+                                                  text: skills[index],
+                                                  onToggle: _togglePreference,
+                                                );
+                                              },
+                                              itemCount: skills.length,
+                                            ),
+                                          ),
+                                        )
+                                      ]),
+                                    ],
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text("Cancel"),
+                                    ),
+                                    TextButton(
+                                      onPressed: () async {
+                                        String? base64Image;
+                                        if (_selectedImage != null) {
+                                          List<int> imageBytes =
+                                              await _selectedImage!
+                                                  .readAsBytesSync();
+                                          base64Image =
+                                              base64Encode(imageBytes);
+                                        }
+                                        var res = await createCommunity(
+                                          token: userID,
+                                          communityName: nameController.text,
+                                          tags: tags,
+                                          profilePic: base64Image,
+                                        );
+                                        if (res['status'] == 'Success') {
+                                          Navigator.of(context).pop();
+                                          ref
+                                              .watch(communityListProvider
+                                                  .notifier)
+                                              .addCommunity(Community(
+                                                id: res["communityID"],
+                                                name: nameController.text,
+                                                imageUrl: base64Image,
+                                                channels: [],
+                                              ));
+                                        }
+                                      },
+                                      child: Text("Create"),
+                                    ),
                                   ],
+                                ));
+                      },
+                      child: const Column(
+                        children: [
+                          Icon(Icons.add),
+                          Text("Add"),
+                        ],
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(horizontal: 32),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.all(4),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        List<Community> communityList =
+                            ref.read(allCommunityListProvider);
+
+                        final storeAllComm = await listCommunities();
+                        ref
+                            .watch(allCommunityListProvider.notifier)
+                            .storeCommunities(
+                                storeAllComm["ListofAllCommunities"]);
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text("Join Community"),
+                                content: Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.9,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.9,
+                                  child: Column(
+                                    children: [
+                                      TextField(
+                                        decoration: InputDecoration(
+                                          hintText: 'Community Name',
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      // Text("Communities..."),
+                                      Expanded(
+                                        child: ListView.builder(
+                                          itemBuilder: (context, index) {
+                                            // return Text(
+                                            // communityList[index].name);
+                                            return CommunityCard(
+                                              id: communityList[index].id,
+                                              name: communityList[index].name,
+                                              tags: communityList[index].tags,
+                                            );
+                                          },
+                                          itemCount: communityList.length,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                                 actions: [
                                   TextButton(
@@ -323,99 +495,19 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                     },
                                     child: Text("Cancel"),
                                   ),
-                                  TextButton(
-                                    onPressed: () async {
-                                      print(nameController.text);
-                                      print(userID);
-                                      var res = await createCommunity(
-                                        token: userID,
-                                        communityName: nameController.text,
-                                        tags: tags,
-                                      );
-                                      if (res['status'] == 'Success') {
-                                        Navigator.of(context).pop();
-                                        ref
-                                            .watch(
-                                                communityListProvider.notifier)
-                                            .addCommunity(Community(
-                                              id: res[
-                                                  "communityID"], //change karna hai baad me
-                                              name: nameController.text,
-                                              // imageUrl: "",
-                                              channels: [],
-                                            ));
-                                      }
-                                    },
-                                    child: Text("Create"),
-                                  ),
                                 ],
-                              ));
-                    },
-                    child: const Column(
-                      children: [
-                        Icon(Icons.add),
-                        Text("Add"),
-                      ],
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      List<Community> communityList =
-                          ref.read(allCommunityListProvider);
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: Text("Join Community"),
-                              content: Container(
-                                width: MediaQuery.of(context).size.width * 0.9,
-                                height:
-                                    MediaQuery.of(context).size.height * 0.9,
-                                child: Column(
-                                  children: [
-                                    TextField(
-                                      decoration: InputDecoration(
-                                        hintText: 'Community Name',
-                                      ),
-                                    ),
-                                    SizedBox(height: 10),
-                                    Text("Communities..."),
-                                    Expanded(
-                                      child: ListView.builder(
-                                        itemBuilder: (context, index) {
-                                          // return Text(
-                                          // communityList[index].name);
-                                          return CommunityCard(
-                                              id: communityList[index].id,
-                                              name: communityList[index].name,
-                                              tags: communityList[index].tags);
-                                        },
-                                        itemCount: communityList.length,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text("Cancel"),
-                                ),
-                                // TextButton(
-                                //   onPressed: () {},
-                                //   child: Text("Join"),
-                                // ),
-                              ],
-                            );
-                          });
-                    },
-                    child: const Column(
-                      children: [
-                        Icon(Icons.person_add),
-                        Text("Join"),
-                      ],
+                              );
+                            });
+                      },
+                      child: const Column(
+                        children: [
+                          Icon(Icons.person_add),
+                          Text("Join"),
+                        ],
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(horizontal: 32),
+                      ),
                     ),
                   ),
                 ],

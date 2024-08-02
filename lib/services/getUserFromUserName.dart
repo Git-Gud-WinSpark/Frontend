@@ -2,6 +2,7 @@ import 'dart:convert';
 
 // import 'package:shared_preferences/shared_preferences.dart';
 import 'package:frontend/common.dart';
+import 'package:frontend/services/postRequest3.dart';
 
 import 'postRequest.dart';
 
@@ -11,6 +12,6 @@ dynamic getUserFromUserName({required String name}) async{
   Map<String, dynamic> params = {
     "userName" : name,
   };
-  var response = await postRequest(jsonEncode(params), url);
+  var response = await postRequest3(jsonEncode(params), url);
   return response;
 }
