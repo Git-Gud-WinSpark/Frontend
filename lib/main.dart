@@ -16,11 +16,8 @@ Future<void> main() async {
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
-  // Gemini.init(
-  //     apiKey: const String.fromEnvironment('apiKey'), enableDebugging: true);
   await dotenv.load(fileName: ".env");
-  Gemini.init(
-      apiKey: dotenv.env['GEMINI']!, enableDebugging: true);
+  Gemini.init(apiKey: dotenv.env['GEMINI']!, enableDebugging: true);
   runApp(ProviderScope(child: new MyApp()));
 }
 

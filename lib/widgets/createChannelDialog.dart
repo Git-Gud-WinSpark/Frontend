@@ -45,7 +45,6 @@ class createChannelDialog extends StatelessWidget {
                         id: res["channelID"],
                       ),
                     );
-                // widget.channelSelected(channelNameController.text);
               }
             },
             child: Text("Create")),

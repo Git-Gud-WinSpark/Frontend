@@ -20,7 +20,6 @@ class CommunityCard extends ConsumerStatefulWidget {
 class _CommunityCardState extends ConsumerState<CommunityCard> {
   @override
   Widget build(BuildContext context) {
-    // widget.tags = ["Flutter", "Dart", "Community", "Programming"];
     var communityList = ref.watch(communityListProvider);
     var userId = ref.watch(tokenProvider);
     return Card(
@@ -50,7 +49,6 @@ class _CommunityCardState extends ConsumerState<CommunityCard> {
             ),
             ElevatedButton(
               onPressed: () async {
-                //check if the community is present already
                 var community =
                     communityList.map((e) => e.id).contains(widget.id);
                 if (community == false && widget.id != null) {
@@ -66,7 +64,7 @@ class _CommunityCardState extends ConsumerState<CommunityCard> {
                                 .toList(),
                             imageUrl: res['profilePicture'],
                           ),
-                        ); //need to add channels once api returns it
+                        );
                   }
                 } else {
                   showDialog(

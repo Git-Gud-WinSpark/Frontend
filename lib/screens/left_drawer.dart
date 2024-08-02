@@ -10,6 +10,7 @@ import 'package:frontend/models/community.dart';
 import 'package:frontend/provider/all_communities_provider.dart';
 import 'package:frontend/provider/community_list_provider.dart';
 import 'package:frontend/provider/community_provider.dart';
+import 'package:frontend/provider/preference_provider.dart';
 import 'package:frontend/provider/token_provider.dart';
 import 'package:frontend/services/createChannel.dart';
 import 'package:frontend/services/createCommunity.dart';
@@ -67,7 +68,6 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
-                  // flex: 2,
                   child: Column(children: [
                     Expanded(
                       child: Container(
@@ -89,7 +89,6 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                         child: ListView.builder(
                           itemBuilder: (context, index) {
                             return CommunityIcon(
-                              // image: communities[index].imageUrl,
                               id: communities[index].id!,
                               name: communities[index].name,
                               channels: communities[index].channels,
@@ -128,11 +127,14 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                     children: [
                                       Expanded(
                                         child: Container(
-                                          // color: Colors.green,
                                           margin: EdgeInsets.symmetric(
                                               horizontal: 10, vertical: 12),
 
                                           child: ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  Color(0xFF433D8B),
+                                            ),
                                             onPressed: () {
                                               TextEditingController
                                                   channelNameController =
@@ -164,8 +166,9 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                                           "Private Chats"
                                                       ? "+ Create Channel"
                                                       : "+ Add Friend",
-                                                  style:
-                                                      TextStyle(fontSize: 16),
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      color: Colors.white),
                                                 ),
                                               ],
                                             ),
@@ -431,12 +434,19 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                       },
                       child: const Column(
                         children: [
-                          Icon(Icons.add),
-                          Text("Add"),
+                          Icon(
+                            Icons.add,
+                            color: Colors.white,
+                          ),
+                          Text(
+                            "Add",
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ],
                       ),
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.symmetric(horizontal: 32),
+                        backgroundColor: Color(0xFF433D8B),
                       ),
                     ),
                   ),
@@ -464,22 +474,34 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                       MediaQuery.of(context).size.height * 0.9,
                                   child: Column(
                                     children: [
-                                      TextField(
-                                        decoration: InputDecoration(
-                                          hintText: 'Community Name',
-                                        ),
-                                      ),
                                       SizedBox(height: 10),
-                                      // Text("Communities..."),
                                       Expanded(
                                         child: ListView.builder(
                                           itemBuilder: (context, index) {
-                                            // return Text(
-                                            // communityList[index].name);
+                                            final preferences =
+                                                ref.read(preferenceProvider);
+                                            final sortedCommunities =
+                                                communityList.toList()
+                                                  ..sort((a, b) {
+                                                    final aPreference =
+                                                        preferences.indexWhere(
+                                                            (element) =>
+                                                                element ==
+                                                                a.id);
+                                                    final bPreference =
+                                                        preferences.indexWhere(
+                                                            (element) =>
+                                                                element ==
+                                                                b.id);
+                                                    return aPreference
+                                                        .compareTo(bPreference);
+                                                  });
                                             return CommunityCard(
-                                              id: communityList[index].id,
-                                              name: communityList[index].name,
-                                              tags: communityList[index].tags,
+                                              id: sortedCommunities[index].id,
+                                              name:
+                                                  sortedCommunities[index].name,
+                                              tags:
+                                                  sortedCommunities[index].tags,
                                             );
                                           },
                                           itemCount: communityList.length,
@@ -501,12 +523,19 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                       },
                       child: const Column(
                         children: [
-                          Icon(Icons.person_add),
-                          Text("Join"),
+                          Icon(
+                            Icons.person_add,
+                            color: Colors.white,
+                          ),
+                          Text(
+                            "Join",
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ],
                       ),
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.symmetric(horizontal: 32),
+                        backgroundColor: Color(0xFF433D8B),
                       ),
                     ),
                   ),

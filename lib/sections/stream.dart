@@ -19,7 +19,6 @@ class _SectionTextInputStreamState extends State<SectionTextStreamInput> {
   final controller = TextEditingController();
   final gemini = Gemini.instance;
   String? searchedText,
-      // result,
       _finishReason;
 
   List<Uint8List>? images;
@@ -43,7 +42,6 @@ class _SectionTextInputStreamState extends State<SectionTextStreamInput> {
                 setState(() {
                   searchedText = null;
                   finishReason = null;
-                  // result = null;
                 });
               },
               child: Text('search: $searchedText')),
@@ -64,7 +62,6 @@ class _SectionTextInputStreamState extends State<SectionTextStreamInput> {
           },
         )),
 
-        /// if the returned finishReason isn't STOP
         if (finishReason != null) Text(finishReason!),
 
         if (images != null)
@@ -83,7 +80,6 @@ class _SectionTextInputStreamState extends State<SectionTextStreamInput> {
             ),
           ),
 
-        /// imported from local widgets
         ChatInputBox(
           controller: controller,
           onClickCamera: () {
@@ -118,7 +114,6 @@ class _SectionTextInputStreamState extends State<SectionTextStreamInput> {
                 setState(() {
                   images = null;
                 });
-                // result = (result ?? '') + (value.output ?? '');
 
                 if (value.finishReason != 'STOP') {
                   finishReason = 'Finish reason is `${value.finishReason}`';

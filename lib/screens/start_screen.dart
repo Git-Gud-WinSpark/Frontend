@@ -14,9 +14,6 @@ class _StartscreenState extends ConsumerState<Startscreen> {
   @override
   void initState() {
     super.initState();
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   _openLoginOverlay();
-    // });
   }
 
   void _openLoginOverlay() {

@@ -47,7 +47,7 @@ class _PreferencesState extends ConsumerState<Preferences> {
             child: GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: 3, // Adjust as necessary for button size
+                childAspectRatio: 3, 
                 crossAxisSpacing: 10.0,
                 mainAxisSpacing: 10.0,
               ),

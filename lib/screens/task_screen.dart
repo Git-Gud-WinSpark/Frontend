@@ -57,7 +57,6 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
 
     _currentIndex = widget.done;
     currentPercent = _currentIndex / widget.subTask.length;
-    // TODO: implement initState
     super.initState();
   }
 
@@ -150,7 +149,6 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
               lineHeight: 20.0,
               animationDuration: 2000,
               percent: currentPercent,
-              // center: const Text("50.0% Completed"),
               barRadius: Radius.circular(8),
               progressColor: Colors.blue,
             ),
@@ -180,7 +178,6 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                 stepperList: [
                   for (var index = 0; index < widget.subTask.length; index++)
                     StepperData(
-                      // WHat i can do is make an interactive icon like start and pause and when the task finishes show tick mark and move to next one.
                       title: StepperText(
                         widget.subTask[index]["name"],
                         textStyle: TextStyle(
@@ -238,14 +235,6 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
           ],
         ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     Navigator.of(context)
-      //         .push(MaterialPageRoute(builder: (ctx) => GeminiChat()));
-      //   },
-      //   heroTag: UniqueKey(),
-
-      // ),
     );
   }
 }

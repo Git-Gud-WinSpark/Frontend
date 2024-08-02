@@ -54,7 +54,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
               .watch(preferenceProvider.notifier)
               .update(userCredential['preferences']);
 
-          // This needs to be replaced.
 
           final getComm = await getCommunities(token: userCredential['token']);
           if (getComm["status"] == "Failed") {
@@ -159,12 +158,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // if (!_isLogin)
-                        //   UserImagePicker(
-                        //     onPickImage: (pickedImage) {
-                        //       _selectedImage = pickedImage;
-                        //     },
-                        //   ),
                         TextFormField(
                           decoration: const InputDecoration(
                             labelText: 'Email Address',
@@ -175,7 +168,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                           validator: (value) {
                             if (value == null ||
                                 value.trim().isEmpty ||
-                                !value.contains('@')) {
+                                !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(value)) {
                               return 'Please enter a valid email address';
                             }
 
@@ -236,12 +229,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                               !_isLogin ? 'Sign up' : 'Login',
                             ),
                           ),
-                        // InkWell(
-                        //   onTap: () async {
-                        //     await signInWithGoogle();
-                        //   },
-                        //   child: Image.asset("assets/images/google.png"),
-                        // ),
                         if (!_isAuthenticating)
                           TextButton(
                             onPressed: () {
