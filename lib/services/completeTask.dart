@@ -1,7 +1,6 @@
 import "dart:convert";
 
 import "package:frontend/common.dart";
-import "package:frontend/services/postRequest2.dart";
 
 import "postRequest.dart";
 
@@ -19,6 +18,6 @@ dynamic completeTask(
     "liveTaskID": taskID,
     "subtaskID": subID
   };
-  var response = postRequest2(jsonEncode(params), url);
+  var response = postRequest(jsonEncode(params), url);
   return response;
 }

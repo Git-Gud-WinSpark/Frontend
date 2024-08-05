@@ -1,7 +1,6 @@
 import "dart:convert";
 
 import "package:frontend/common.dart";
-import "package:frontend/services/postRequest3.dart";
 
 import "postRequest.dart";
 
@@ -17,6 +16,6 @@ dynamic storeTasks(
     "token": token,
     "liveTask": tasks,
   };
-  var response = postRequest3(jsonEncode(params), url);
+  var response = postRequest(jsonEncode(params), url);
   return response;
 }

@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 
 class ToggleSkills extends StatefulWidget {
@@ -33,12 +31,12 @@ class _ToggleSkillsState extends State<ToggleSkills> {
         widget.onToggle(widget.text, isSelected);
         _handlePress();
       },
-      child: Text(widget.text,
-          style: TextStyle(color: isSelected ? Colors.white : Colors.black)),
       style: ElevatedButton.styleFrom(
           backgroundColor: isSelected
               ? Theme.of(context).colorScheme.primary
               : Theme.of(context).colorScheme.inversePrimary),
+      child: Text(widget.text,
+          style: TextStyle(color: isSelected ? Colors.white : Colors.black)),
     );
   }
 }

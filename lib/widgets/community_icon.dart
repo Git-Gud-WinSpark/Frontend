@@ -1,12 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'dart:io' as io;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/models/channel.dart';
 import 'package:frontend/models/community.dart';
-import 'package:frontend/provider/community_list_provider.dart';
 import 'package:frontend/provider/community_provider.dart';
 import 'package:frontend/provider/token_provider.dart';
 import 'package:frontend/services/fetchChatPrivate.dart';
@@ -27,7 +25,7 @@ class CommunityIcon extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
       alignment: Alignment.centerLeft,
       child: InkWell(
         onTap: () async {

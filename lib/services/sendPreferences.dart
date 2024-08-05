@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:frontend/common.dart';
-import 'package:frontend/services/postRequest2.dart';
 
 import 'postRequest.dart';
 
@@ -11,7 +10,7 @@ dynamic sendPreferences(
     "token": userID,
     "preferences": preferences,
   };
-  var response = postRequest2(jsonEncode(params), url);
+  var response = postRequest(jsonEncode(params), url);
 
   return response;
 }

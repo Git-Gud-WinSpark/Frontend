@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/screens/auth.dart';
 
@@ -24,7 +23,7 @@ class _StartscreenState extends ConsumerState<Startscreen> {
         barrierColor: Colors.white.withOpacity(0),
         elevation: 0,
         builder: (ctx) {
-          return AuthScreen();
+          return const AuthScreen();
         });
   }
 
@@ -46,7 +45,7 @@ class _StartscreenState extends ConsumerState<Startscreen> {
       ),
       bottomNavigationBar: Container(
         height: 60,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Color.fromARGB(255, 25, 27, 44),
         ),
         child: InkWell(

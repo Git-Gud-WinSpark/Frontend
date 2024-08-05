@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/models/channel.dart';
 import 'package:frontend/models/community.dart';
 
 class AllCommunityListNotifier extends StateNotifier<List<Community>> {

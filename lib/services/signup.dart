@@ -1,7 +1,6 @@
 import "dart:convert";
 
 import "package:frontend/common.dart";
-import "package:frontend/services/postRequest2.dart";
 
 import "postRequest.dart";
 
@@ -13,6 +12,6 @@ dynamic registerUser(
     "email": email,
     "password": password,
   };
-  var response = postRequest2(jsonEncode(params), url);
+  var response = postRequest(jsonEncode(params), url);
   return response;
 }

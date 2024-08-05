@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/models/channel.dart';
 import 'package:frontend/models/community.dart';
 import 'package:frontend/provider/community_list_provider.dart';
-import 'package:frontend/provider/community_provider.dart';
 import 'package:frontend/provider/token_provider.dart';
 import 'package:frontend/services/addCommunity.dart';
 
@@ -69,7 +68,7 @@ class _CommunityCardState extends ConsumerState<CommunityCard> {
                 } else {
                   showDialog(
                     context: context,
-                    builder: (context) => AlertDialog(
+                    builder: (context) => const AlertDialog(
                       title: Text("Community Already Exists"),
                     ),
                   );

@@ -29,14 +29,14 @@ class _UserImagePickerState extends State<UserImagePicker> {
               },
               child: Text("Camera"),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
-              child: Text("gallery "),
+              child: const Text("gallery "),
             ),
           ],
         ),
@@ -52,7 +52,7 @@ class _UserImagePickerState extends State<UserImagePicker> {
       return;
     }
     setState(() {
-      _pickedImageFile = File(pickedImage!.path);
+      _pickedImageFile = File(pickedImage.path);
     });
 
     widget.onPickImage(_pickedImageFile!);
