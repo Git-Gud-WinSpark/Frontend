@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:frontend/sections/chat.dart';
 import 'package:frontend/sections/chat_stream.dart';
 import 'package:frontend/sections/embed_batch_contents.dart';

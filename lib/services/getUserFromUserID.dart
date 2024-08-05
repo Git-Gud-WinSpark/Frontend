@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:frontend/common.dart';
-import 'package:frontend/services/postRequest2.dart';
 
 import 'postRequest.dart';
 
@@ -10,6 +9,6 @@ dynamic getUserFromUserID({required String userID}) async{
   Map<String, dynamic> params = {
     "userID" : userID,
   };
-  var response = await postRequest2(jsonEncode(params), url);
+  var response = await postRequest(jsonEncode(params), url);
   return response;
 }

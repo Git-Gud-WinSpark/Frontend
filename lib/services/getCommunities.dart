@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'package:frontend/common.dart';
-import 'package:frontend/services/postRequest2.dart';
-
-import 'postRequest.dart';
+import 'package:frontend/services/postRequest.dart';
 
 dynamic getCommunities({required String token}) async{
 
@@ -10,6 +8,6 @@ dynamic getCommunities({required String token}) async{
   Map<String, dynamic> params = {
     "token" : token,
   };
-  var response = await postRequest2(jsonEncode(params), url);
+  var response = await postRequest(jsonEncode(params), url);
   return response;
 }

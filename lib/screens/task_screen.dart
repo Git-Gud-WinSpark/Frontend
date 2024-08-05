@@ -1,10 +1,8 @@
 import 'package:another_stepper/another_stepper.dart';
 import 'package:custom_timer/custom_timer.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 import 'package:frontend/screens/gemini_chat.dart';
 import 'package:frontend/services/completeTask.dart';
 import 'package:frontend/services/setSubtaskTime.dart';
@@ -15,10 +13,10 @@ class TaskScreen extends ConsumerStatefulWidget {
     super.key,
     required this.subTask,
     required this.done,
-    required String this.uId,
-    required String this.coId,
-    required String this.chId,
-    required String this.liveID,
+    required this.uId,
+    required this.coId,
+    required this.chId,
+    required this.liveID,
   });
   final String uId;
   final String coId;
@@ -51,7 +49,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
     _controller = CustomTimerController(
         vsync: this,
         begin: duration!,
-        end: Duration(),
+        end: const Duration(),
         initialState: CustomTimerState.reset,
         interval: CustomTimerInterval.milliseconds);
 
@@ -61,7 +59,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
   }
 
   void setComplete() async {
-    var res = await completeTask(
+    await completeTask(
         token: widget.uId,
         communityID: widget.coId,
         channelID: widget.chId,
@@ -85,7 +83,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
   }
 
   void setTime(String time) async {
-    var res = await setSubtaskTime(
+    await setSubtaskTime(
       token: widget.uId,
       communityID: widget.coId,
       channelID: widget.chId,
@@ -115,10 +113,10 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             icon: const Icon(Icons.arrow_back)),
         actions: [
           IconButton(
-            icon: Icon(Icons.chat_bubble_outline),
+            icon: const Icon(Icons.chat_bubble_outline),
             onPressed: () {
               Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (ctx) => GeminiChat()));
+                  .push(MaterialPageRoute(builder: (ctx) => const GeminiChat()));
             },
           ),
         ],
@@ -154,7 +152,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
             ),
             Text(
               "${(currentPercent * 100).toStringAsFixed(2)}% Completed",
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -180,7 +178,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
                     StepperData(
                       title: StepperText(
                         widget.subTask[index]["name"],
-                        textStyle: TextStyle(
+                        textStyle: const TextStyle(
                           color: Colors.white,
                         ),
                       ),
@@ -197,7 +195,7 @@ class _TaskScreenState extends ConsumerState<TaskScreen>
               builder: (state, time) {
                 return Text(
                   "${time.hours}:${time.minutes}:${time.seconds}.${time.milliseconds}",
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 24.0,
                     color: Colors.white,
                   ),
@@ -249,14 +247,14 @@ class RoundedButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      child: Text(text, style: TextStyle(color: Colors.white)),
       style: TextButton.styleFrom(
         backgroundColor: color,
-        padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
+        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
       ),
       onPressed: onPressed,
+      child: Text(text, style: const TextStyle(color: Colors.white)),
     );
   }
 }

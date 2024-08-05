@@ -4,7 +4,6 @@ import 'package:frontend/models/channel.dart';
 import 'package:frontend/models/community.dart';
 import 'package:frontend/provider/community_list_provider.dart';
 import 'package:frontend/provider/token_provider.dart';
-import 'package:frontend/services/createChannel.dart';
 import 'package:frontend/services/getUserFromUserName.dart';
 import 'package:frontend/services/sendChatPrivate.dart';
 
@@ -31,7 +30,7 @@ class _AdduserdialogState extends State<Adduserdialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("Add Friend"),
+      title: const Text("Add Friend"),
       content: Container(
         width: MediaQuery.of(context).size.width * 0.5,
         height: MediaQuery.of(context).size.height * 0.5,
@@ -39,7 +38,7 @@ class _AdduserdialogState extends State<Adduserdialog> {
           children: [
             TextField(
               controller: nameController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                   hintText: "Enter user name: ", labelText: "User Name"),
             ),
             Expanded(
@@ -58,7 +57,7 @@ class _AdduserdialogState extends State<Adduserdialog> {
                         "mode": "p2p",
                       });
                       String userID = widget.ref.watch(tokenProvider);
-                      var res = await sendChatPrivate(
+                      await sendChatPrivate(
                           userID: userID,
                           receiverID: users[index]["_id"],
                           message: "Started Chat.");
@@ -85,7 +84,7 @@ class _AdduserdialogState extends State<Adduserdialog> {
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: Text("Cancel")),
+            child: const Text("Cancel")),
         ElevatedButton(
             onPressed: () async {
               var res = await getUserFromUserName(name: nameController.text);
@@ -95,7 +94,7 @@ class _AdduserdialogState extends State<Adduserdialog> {
                 });
               }
             },
-            child: Text("Search")),
+            child: const Text("Search")),
       ],
     );
   }

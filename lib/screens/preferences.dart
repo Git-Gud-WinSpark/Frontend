@@ -7,6 +7,8 @@ import 'package:frontend/services/sendPreferences.dart';
 import 'package:frontend/widgets/skills.dart';
 
 class Preferences extends ConsumerStatefulWidget {
+  const Preferences({super.key});
+
   @override
   ConsumerState<Preferences> createState() => _PreferencesState();
 }
@@ -36,7 +38,7 @@ class _PreferencesState extends ConsumerState<Preferences> {
       color: Theme.of(context).colorScheme.inverseSurface.withOpacity(0.6),
       child: Column(
         children: [
-          Text(
+          const Text(
             "Tell us about your preferences...",
             style: TextStyle(
               color: Colors.white,
@@ -45,7 +47,7 @@ class _PreferencesState extends ConsumerState<Preferences> {
           ),
           Expanded(
             child: GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 childAspectRatio: 3, 
                 crossAxisSpacing: 10.0,
@@ -62,13 +64,13 @@ class _PreferencesState extends ConsumerState<Preferences> {
           ),
           ElevatedButton(
             onPressed: () async {
-              dynamic res = await sendPreferences(
+              await sendPreferences(
                 userID: ref.read(tokenProvider),
                 preferences: prefernces,
               );
               ref.watch(preferenceProvider.notifier).update(prefernces);
             },
-            child: Text("Submit"),
+            child: const Text("Submit"),
           )
         ],
       ),

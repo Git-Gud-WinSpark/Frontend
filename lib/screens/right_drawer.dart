@@ -9,9 +9,9 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 class RightDrawer extends ConsumerStatefulWidget {
   const RightDrawer(
       {super.key,
-      required String this.uId,
-      required String this.coId,
-      required String this.chId});
+      required this.uId,
+      required this.coId,
+      required this.chId});
   final String uId;
   final String coId;
   final String chId;
@@ -33,7 +33,7 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
       if ((response["LiveTasks"] as List).isNotEmpty) {
         task = List<Map<String, dynamic>>.from(
             response["LiveTasks"][0]["liveTask"]);
-        task.forEach((element) {
+        for (var element in task) {
           int count = 0;
           element['subtask'].forEach((subElement) {
             if (subElement['status']) {
@@ -41,7 +41,7 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
             }
           });
           completedTasks.add(count);
-        });
+        }
       }
     });
   }
@@ -68,7 +68,7 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
         children: [
           Expanded(
               child: Container(
-            margin: EdgeInsets.all(16),
+            margin: const EdgeInsets.all(16),
             child: const MonthView(
               showBorder: true,
               cellAspectRatio: 0.5,
@@ -93,7 +93,7 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(8),
                           child: ListView.builder(
                               shrinkWrap: true,
                               itemCount: task.length,
@@ -111,7 +111,7 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
                                       );
                                 });
                                 return Card(
-                                  color: Color(0xFF433D8B),
+                                  color: const Color(0xFF433D8B),
                                   child: ListTile(
                                     textColor: Colors.white,
                                     title: Column(
@@ -178,7 +178,7 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            content: Container(
+                            content: SizedBox(
                               height: MediaQuery.of(context).size.height * 0.9,
                               width: MediaQuery.of(context).size.width * 0.9,
                               child: TaskForm(
@@ -195,8 +195,8 @@ class _RightDrawerState extends ConsumerState<RightDrawer> {
                         });
                       }
                     },
-                    child: Center(
-                      child: const Text(
+                    child: const Center(
+                      child: Text(
                         "Click to Add some tasks",
                         style: TextStyle(color: Colors.white),
                       ),

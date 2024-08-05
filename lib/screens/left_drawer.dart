@@ -5,14 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/dummydata/images.dart';
 import 'package:frontend/dummydata/skills.dart';
-import 'package:frontend/models/channel.dart';
 import 'package:frontend/models/community.dart';
 import 'package:frontend/provider/all_communities_provider.dart';
 import 'package:frontend/provider/community_list_provider.dart';
 import 'package:frontend/provider/community_provider.dart';
 import 'package:frontend/provider/preference_provider.dart';
 import 'package:frontend/provider/token_provider.dart';
-import 'package:frontend/services/createChannel.dart';
 import 'package:frontend/services/createCommunity.dart';
 import 'package:frontend/services/getChats.dart';
 import 'package:frontend/services/getPrivateChats.dart';
@@ -55,7 +53,6 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
     String userID = ref.watch(tokenProvider);
     final communityInfo = ref.watch(communityProvider);
     final communities = ref.watch(communityListProvider);
-    bool isPvtChat = false;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Column(
@@ -466,15 +463,15 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                             context: context,
                             builder: (context) {
                               return AlertDialog(
-                                title: Text("Join Community"),
-                                content: Container(
+                                title: const Text("Join Community"),
+                                content: SizedBox(
                                   width:
                                       MediaQuery.of(context).size.width * 0.9,
                                   height:
                                       MediaQuery.of(context).size.height * 0.9,
                                   child: Column(
                                     children: [
-                                      SizedBox(height: 10),
+                                      const SizedBox(height: 10),
                                       Expanded(
                                         child: ListView.builder(
                                           itemBuilder: (context, index) {
@@ -515,12 +512,16 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                                     onPressed: () {
                                       Navigator.of(context).pop();
                                     },
-                                    child: Text("Cancel"),
+                                    child: const Text("Cancel"),
                                   ),
                                 ],
                               );
                             });
                       },
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        backgroundColor: const Color(0xFF433D8B),
+                      ),
                       child: const Column(
                         children: [
                           Icon(
@@ -533,10 +534,6 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
                           ),
                         ],
                       ),
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(horizontal: 32),
-                        backgroundColor: Color(0xFF433D8B),
-                      ),
                     ),
                   ),
                 ],
@@ -546,6 +543,5 @@ class _LeftDrawerState extends ConsumerState<LeftDrawer> {
         ],
       ),
     );
-    ;
   }
 }

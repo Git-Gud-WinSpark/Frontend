@@ -20,8 +20,8 @@ class _TaskFormState extends State<TaskForm> {
   final _taskNameController = TextEditingController();
   final _completionTimeController = TextEditingController();
   bool _taskStatus = false;
-  List<Subtask> _subtasks = [];
-  List<Task> _tasks = [];
+  final List<Subtask> _subtasks = [];
+  final List<Task> _tasks = [];
 
   final _subtaskNameController = TextEditingController();
   final _timeSpentController = TextEditingController();
@@ -70,7 +70,7 @@ class _TaskFormState extends State<TaskForm> {
   void _submitForm() async {
     dynamic tasks = _tasks.map((task) => task.toJson()).toList();
     Navigator.of(context).pop(tasks);
-    var res = await storeTasks(
+    await storeTasks(
         token: widget.uId,
         communityID: widget.coId,
         channelID: widget.chId,
@@ -81,7 +81,7 @@ class _TaskFormState extends State<TaskForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Task Form',
         ),
         backgroundColor: Colors.white,
@@ -101,11 +101,11 @@ class _TaskFormState extends State<TaskForm> {
                 children: [
                   TextField(
                     controller: _taskNameController,
-                    decoration: InputDecoration(labelText: 'Task Name'),
+                    decoration: const InputDecoration(labelText: 'Task Name'),
                   ),
                   Row(
                     children: [
-                      Text('Task Status'),
+                      const Text('Task Status'),
                       Checkbox(
                         value: _taskStatus,
                         onChanged: (value) {
@@ -128,15 +128,15 @@ class _TaskFormState extends State<TaskForm> {
                           value?.toIso8601String() ?? '';
                     },
                   ),
-                  SizedBox(height: 20),
-                  Text('Subtasks', style: TextStyle(fontSize: 18)),
+                  const SizedBox(height: 20),
+                  const Text('Subtasks', style: TextStyle(fontSize: 18)),
                   TextField(
                     controller: _subtaskNameController,
-                    decoration: InputDecoration(labelText: 'Subtask Name'),
+                    decoration: const InputDecoration(labelText: 'Subtask Name'),
                   ),
                   Row(
                     children: [
-                      Text('Subtask Status'),
+                      const Text('Subtask Status'),
                       Checkbox(
                         value: _subtaskStatus,
                         onChanged: (value) {
@@ -150,7 +150,7 @@ class _TaskFormState extends State<TaskForm> {
                   TextField(
                     controller: _timeSpentController,
                     decoration:
-                        InputDecoration(labelText: 'Time Spent (hh:mm:ss)'),
+                      const  InputDecoration(labelText: 'Time Spent (hh:mm:ss)'),
                     keyboardType: TextInputType.datetime,
                     onChanged: (value) {
                       final timeParts = value.split(':');
@@ -170,19 +170,19 @@ class _TaskFormState extends State<TaskForm> {
                   ),
                   ElevatedButton(
                     onPressed: _addSubtask,
-                    child: Text('Add Subtask'),
+                    child: const Text('Add Subtask'),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       TextButton(
                         onPressed: _addTask,
-                        child: Text('Submit Task'),
+                        child: const Text('Submit Task'),
                       ),
                       TextButton(
                         onPressed: _cancelTask,
-                        child: Text('Cancel Task'),
+                        child: const Text('Cancel Task'),
                       ),
                     ],
                   ),
@@ -199,7 +199,7 @@ class _TaskFormState extends State<TaskForm> {
                               children: [
                                 Text('Status: ${task.status}'),
                                 Text('Completion Time: ${task.completionTime}'),
-                                Text('Subtasks:'),
+                                const Text('Subtasks:'),
                                 ...task.subtask.map<Widget>((subtask) {
                                   return Text(
                                       '- ${subtask.name} (Status: ${subtask.status}, Time Spent: ${subtask.timeSpent})');
@@ -213,13 +213,13 @@ class _TaskFormState extends State<TaskForm> {
                   ),
                   ElevatedButton(
                     onPressed: _submitForm,
-                    child: Text('Submit Form'),
+                    child: const Text('Submit Form'),
                   ),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: Text('Cancel Button'),
+                    child: const Text('Cancel Button'),
                   ),
                 ],
               ),

@@ -1,20 +1,13 @@
-import 'dart:io';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/provider/all_communities_provider.dart';
 import 'package:frontend/provider/community_list_provider.dart';
 import 'package:frontend/provider/login_provider.dart';
 import 'package:frontend/provider/preference_provider.dart';
 import 'package:frontend/provider/token_provider.dart';
 import 'package:frontend/provider/user_provider.dart';
-import 'package:frontend/services/fetchChatPrivate.dart';
 import 'package:frontend/services/getCommunities.dart';
-import 'package:frontend/services/listCommunities.dart';
 import 'package:frontend/services/login.dart';
 import 'package:frontend/services/signup.dart';
-import 'package:frontend/widgets/user_image_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key});
@@ -30,7 +23,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   var _enteredEmail = "";
   var _enteredPassword = "";
   var _enteredUsername = "";
-  File _selectedImage = File("assets/images/sample.jpeg");
   var _isAuthenticating = false;
 
   void _submit() async {

@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/provider/preference_provider.dart';
-import 'package:frontend/provider/token_provider.dart';
 import 'package:frontend/screens/preferences.dart';
-import 'package:frontend/services/sendPreferences.dart';
-import 'package:frontend/widgets/skills.dart';
-import 'package:frontend/dummydata/skills.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Success extends ConsumerStatefulWidget {
   const Success({super.key});
