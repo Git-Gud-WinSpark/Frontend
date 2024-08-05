@@ -109,3 +109,9 @@ The frontend application communicates with the backend API to fetch and send dat
 <img src ="assets/gemini1.png" style="height:400px;"/>
 <img src ="assets/gemini2.png" style="height:400px;"/>
 <img src ="assets/gemini3.png" style="height:400px;"/>
+
+### env format
+```
+GEMINI=GEMINI_API_KEY
+IPADD=YOUR_IP_ADDR
+```
